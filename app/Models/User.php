@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Models;
+
+class User
+{
+    private $conn;
+
+    public function __construct()
+    {
+        require __DIR__ . '/../Config/connect.php';
+        $this->conn = $conn;
+    }
+
+    public function findByUsername($username)
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT id, username, email, password, role 
+     FROM users 
+     WHERE username = ? 
+     LIMIT 1"
+        );
+
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        $stmt->close();
+
+        return $user ?: null;
+    }
+
+    public function existsByUsername($username)
+    {
+        return $this->findByUsername($username) !== null;
+    }
+
+    public function existsByEmail($email)
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM users WHERE email = ? LIMIT 1"
+        );
+
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $exists = $result->fetch_assoc();
+
+        $stmt->close();
+
+        return $exists !== null;
+    }
+
+    public function create($username, $email, $password)
+    {
+        $role = 'editor'; //mặc định cứng ở server
+
+        $stmt = $this->conn->prepare(
+            "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)"
+        );
+
+        $stmt->bind_param("ssss", $username, $email, $password, $role);
+        $result = $stmt->execute();
+
+        $stmt->close();
+
+        return $result;
+    }
+}

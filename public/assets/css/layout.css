@@ -1,0 +1,382 @@
+@charset "utf-8";
+/* ===================================================================
+ style info : 全体レイアウト
+=================================================================== */
+
+/* global
+ * ---------------------------------------------------------------- */
+body {
+  font-family: 'Noto Sans JP', 'Century Gothic', 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', 游ゴシック体, YuGothic, "Yu Gothic Medium", 游ゴシック, 'Yu Gothic', メイリオ, Meiryo, sans-serif;
+  color: #111111;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
+  background-image: url("../images/bg.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: top;
+  line-height:1.6;
+  font-size:13px;
+}
+.medium {
+  font-size:13px;
+}
+.large {
+  font-size:15px;
+}
+.clear_float{
+  float:none !important;
+  clear:both !important;
+  border:none !important;
+  width:0px !important;
+  height:0px !important;
+  padding:0px !important;
+}
+.hideimg{
+  overflow: hidden;
+  text-indent: 100%;
+  white-space: nowrap;
+}
+/* header
+ * ---------------------------------------------------------------- */
+header#branding {
+  width:100%;
+}
+header#branding .pointarea {
+  width:960px;
+  margin:0px auto;
+  padding:3px 0px;
+}
+header#branding .leftbox {
+  float:left;
+  width:700px;
+}
+header#branding .rightbox {
+  float:right;
+  width:240px;
+}
+header#branding .leftbox,
+header#branding .rightbox {
+  height:50px;
+}
+header#branding .rightbox .telbox{
+  text-align: right;
+  padding-top: 10px;
+}
+header#branding .rightbox .telbox img{
+  width: 230px;
+  height: 50px;
+}
+header#branding p#site-description{
+  margin:0 0 12px 0;
+  padding:16px 0 0 0;
+  color:#e87f38;
+}
+header#branding h1{
+  float:left;
+  display:block;
+  width:119px;
+  height:47px;
+  margin-top:1px;
+  margin-right:1px;
+  margin-bottom:2px;
+}
+header#branding h1 a{
+  display:block;
+  width:114px;
+}
+header#branding h1 a .site_title{
+  line-height: 1.0;
+}
+header#branding h1 a img{
+  width:100%;
+}
+header#branding .toparea {
+  position: relative;
+}
+header#branding .site-info {
+  float:left;
+  display:block;
+  width: 580px;
+  height:50px;
+  margin:0px;
+}
+header#branding .site-text{
+  display:block;
+  height:13px;
+  width: 100%;
+  padding-top:10px;
+  margin-bottom: 2px;
+  line-height:13px;
+  font-size:13px;
+}
+header#branding .site-catch{
+  display:block;
+  height:25px;
+  line-height:25px;
+}
+header#branding .head_nav_rightbox{
+  display:block;
+  width: 240px;
+  height:48px;
+  margin:1px 0px;
+}
+header#branding .head_nav_rightbox a{
+  display:block;
+  background:url(../images/web_btn1.jpg) left center no-repeat;
+  width:237px;
+  height:48px;
+  text-indent:-9999px;
+  padding-left:3px;
+}
+/* subnavi
+ * ---------------------------------------------------------------- */
+header#branding nav#sub p{
+  text-align:right;
+  font-weight:bold;
+  font-size:93%;
+}
+header#branding nav#sub p a{
+  display:inline-block;
+  margin-left:1em;
+  color:#666666;
+}
+header#branding nav#sub p a:hover{
+  color:#0978c5;
+}
+
+/* navi
+ * ---------------------------------------------------------------- */
+header#branding nav#access {
+  border-top:3px solid #0E204E;
+  clear:both;
+  height:60px;
+  margin:0 0 0 0;
+}
+header#branding nav#access div{
+  padding-top:20px;
+}
+header#branding nav#access ul#menu-global{
+  width:960px;
+  margin:0 auto;
+}
+header#branding nav#access ul#menu-global li{
+  border-left:1px solid silver;
+  float:left;
+  height:26px;
+  padding:0px 12px;
+}
+header#branding nav#access ul#menu-global li.first{
+  border:none;
+}
+header#branding nav#access ul#menu-global .opt-last{
+}
+header#branding nav#access ul#menu-global > li > a{
+  display:table-cell;
+  min-width:103px;
+  height:26px;
+  outline: none;
+  font-size: 13px;
+  line-height:15px;
+  vertical-align: middle;
+  text-align: center;
+  text-decoration: none;
+  color:#4c4c4c;
+  font-weight:bold;
+}
+header#branding nav#access ul#menu-global li.first a{
+  background:url(../img/icon/top_home.png) left center no-repeat;
+  width:76px;
+  max-width:76px;
+  min-width:76px;
+  padding-left:36px;
+  line-height:15px;
+  text-align:left;
+}
+header#branding nav#access ul#menu-global > li > a:hover{
+  /*color: #0E204E;*/
+}
+header#branding nav#access ul#menu-global > li:first-child > a{
+}
+header#branding nav#access ul#menu-global > li:last-child > a{
+  width:155px;
+}
+header#branding aside#pankuzu {
+  height:1.0em;
+  margin:0 0 20px 0;
+  font-size:85%;
+}
+header#branding aside#pankuzu ul li{
+  margin:0 6px 0 0;
+  float:left;
+}
+header#branding aside#pankuzu a {
+  text-decoration:underline;
+  color:#0978c5;
+}
+
+/* Assistive text */
+.assistive-text {
+  position: absolute !important;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+}
+#access a.assistive-text:active,
+#access a.assistive-text:focus {
+  background: #f9f9f9;
+  border-bottom: 1px solid #c5c5c5;
+  color: #1982d1;
+  clip: auto !important;
+  font-size: 12px;
+  position: absolute;
+  text-decoration: underline;
+  top: 0;
+  left: 7.6%;
+}
+
+
+/* global sidebar
+ * ---------------------------------------------------------------- */
+
+#primaryWrap {
+  position:relative;
+  width:700px;
+  float:left;
+}
+
+/* global side
+ * ---------------------------------------------------------------- */
+#globalwidget{
+  margin:0px 0px 0px 0px;
+  width:240px;
+  float:right;
+}
+#globalwidget .globalBanner{
+  margin:0 0 20px 0;
+}
+#globalwidget .globalBanner a{
+  display:block;
+}
+#globalwidget .globalBanner a img{
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* main
+ * ---------------------------------------------------------------- */
+#main {
+  clear:both;
+  width:960px;
+  margin:0 auto;
+}
+header.global-header h1.global-title {
+  background:url(../images/center_titelback.png) left top no-repeat;
+  margin:0 0 30px 0;
+  padding:0 0 0 140px;
+  min-height:50px;
+  height: auto !important;
+  height: 50px;
+  color:#595757;
+  font-size:167%;
+}
+.pagetop {
+  clear:both;
+  padding:0px 0px 0px 0px;
+  text-align:right;
+  font-size:85%;
+  margin: 0 10px;
+}
+.pagetop a{
+  background: rgba(0, 0, 0, 0) url("../img/top_back.png") no-repeat scroll right center;
+  color: #666666;
+  display: inline-block;
+  height: 15px;
+  text-decoration: none;
+  width: 30px;
+}
+.scroll_links{
+  width:70px;
+  height:103px;
+  background-color:#333;
+  top:40%;
+  right:0px;
+  position:fixed;
+}
+.scroll_links a{
+  display:block;
+  width:100%;
+  height:100%;
+}
+.scroll_links a img{
+  width:100%;
+  height:100%;
+}
+/* footer
+ * ---------------------------------------------------------------- */
+footer#colophon{
+  background-color:#0E204E;
+  min-height:90px;
+  height: auto !important;
+  height: 180px;
+  width:100%;
+}
+footer#colophon .inner{
+  padding-top:20px;
+}
+footer#colophon .inner .linkbox{
+  width:960px;
+  margin:0 auto;
+}
+footer#colophon .inner .linkbox .linkcol{
+  text-align:center;
+  margin-bottom:10px;
+}
+footer#colophon .inner .linkbox .linkcol ul{
+  display:inline-block;
+}
+footer#colophon .inner .linkbox .linkcol ul li{
+  float:left;
+  padding-left:20px;
+  margin-right:50px;
+  background: url("../img/icon_16_arrow.gif") no-repeat scroll left center transparent;
+}
+footer#colophon .inner .linkbox .linkcol ul li a{
+  color:#FFFFFF;
+  font-size:85%;
+}
+footer#colophon .corpinfobox{
+  margin:20px auto;
+  text-align:center;
+}
+footer#colophon .corpinfobox p{
+  color:#FFFFFF;
+}
+footer#colophon .corpinfobox p.footer_corp_name{
+  font-size:20px;
+  margin-bottom:5px;
+}
+footer#colophon .corpinfobox p.footer_corp_address{
+  font-size:85%;
+}
+footer#colophon .copybox {
+  clear:both;
+  width:960px;
+  min-height:1em;
+  height: auto !important;
+  height: 1em;
+  margin:0 auto;
+  padding:5px 0 10px 0;
+  text-align: center;
+}
+footer#colophon .copybox p.copy{
+  font-size:77%;
+  color:#FFFFFF;
+}
+footer#colophon .copybox p.copy span {
+  vertical-align:top;
+  height:1em;
+  line-height:1.5em;
+  font-size:100%;
+}
