@@ -151,6 +151,16 @@ class JiraService
                 ];
             }
 
+            if (!empty($data['labels'])) {
+                $payload['fields']['labels'] = array_values($data['labels']);
+            }
+
+            if (!empty($data['priority'])) {
+                $payload['fields']['priority'] = [
+                    'id' => $data['priority']
+                ];
+            }
+
             if (!empty($data['duedate'])) {
                 $payload['fields']['duedate'] = $data['duedate'];
             }
@@ -210,7 +220,7 @@ class JiraService
         $response = $this->client->get('/rest/api/3/search/jql', [
             'query' => [
                 'jql' => "project = {$this->projectKey} ORDER BY Rank ASC",
-                'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment',
+                'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment,labels',
                 'maxResults' => 100
             ]
         ]);
@@ -346,5 +356,120 @@ class JiraService
             ];
         }
     }
+
+    public function getAllLabels()
+    {
+        $cacheFile = __DIR__ . '/../../storage/cache/labels.json';
+        $cacheTime = 3600; // 1 giờ
+
+        // Nếu có cache và chưa hết hạn → dùng luôn
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
+            return json_decode(file_get_contents($cacheFile), true);
+        }
+
+        // Nếu không có cache → gọi API
+        $allLabels = [];
+        $startAt = 0;
+        $maxResults = 50;
+
+        try {
+            do {
+                $response = $this->client->get('/rest/api/3/label', [
+                    'query' => [
+                        'startAt' => $startAt,
+                        'maxResults' => $maxResults
+                    ]
+                ]);
+
+                $data = json_decode($response->getBody(), true);
+
+                $labels = $data['values'] ?? [];
+                $allLabels = array_merge($allLabels, $labels);
+
+                $startAt += $maxResults;
+
+            } while (!empty($labels));
+
+            // Lưu cache
+            if (!empty($allLabels)) {
+                // tạo folder nếu chưa có
+                if (!file_exists(dirname($cacheFile))) {
+                    mkdir(dirname($cacheFile), 0777, true);
+                }
+
+                file_put_contents($cacheFile, json_encode($allLabels));
+            }
+
+        } catch (\Exception $e) {
+            // nếu API lỗi → fallback cache cũ (nếu có)
+            if (file_exists($cacheFile)) {
+                return json_decode(file_get_contents($cacheFile), true);
+            }
+            return [];
+        }
+
+        return $allLabels;
+    }
+
+
+    public function updateDueDate($issueKey, $duedate)
+    {
+        try {
+            $response = $this->client->put("/rest/api/3/issue/{$issueKey}", [
+                'json' => [
+                    'fields' => [
+                        'duedate' => $duedate
+                    ]
+                ]
+            ]);
+
+            return json_decode($response->getBody(), true);
+
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getPriorities()
+    {
+        try {
+            $response = $this->client->get('/rest/api/3/priority');
+            $data = json_decode($response->getBody(), true);
+
+            return $data ?? [];
+
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function deleteTask($issueKey)
+    {
+        try {
+            // 1. get issue
+            $issue = $this->client->get("/rest/api/3/issue/{$issueKey}");
+            $data = json_decode($issue->getBody(), true);
+
+            $subtasks = $data['fields']['subtasks'] ?? [];
+
+            // 2. delete subtasks
+            foreach ($subtasks as $sub) {
+                $this->client->delete("/rest/api/3/issue/" . $sub['key']);
+            }
+
+            // 3. delete parent
+            $this->client->delete("/rest/api/3/issue/{$issueKey}");
+
+            return ['success' => true];
+
+        } catch (\Exception $e) {
+            return ['error' => true, 'message' => $e->getMessage()];
+        }
+    }
+
+
 
 }

@@ -23,6 +23,8 @@ class TaskController
     {
         $jira = new \App\Services\JiraService();
         $users = $jira->getAssignableUsers();
+        $labels = $jira->getAllLabels();
+        $priorities = $jira->getPriorities();
 
         require __DIR__ . '/../../public/views/task/create-task.php';
     }
@@ -42,6 +44,8 @@ class TaskController
             $descriptionRaw = $_POST['description'] ?? '';
             $assignee = $_POST['assignee'] ?? null;
             $duedate = $_POST['duedate'] ?? null;
+            $labels = $_POST['labels'] ?? [];
+            $priority = $_POST['priority'] ?? null;
 
             if (empty($summary)) {
                 http_response_code(422);
@@ -86,6 +90,8 @@ class TaskController
                 'summary' => $summary,
                 'description' => $description,
                 'assignee' => $assignee,
+                'labels' => $labels,
+                'priority' => $priority,
                 'duedate' => $duedate
             ]);
 
@@ -261,6 +267,14 @@ class TaskController
         libxml_clear_errors();
 
         $body = $dom->getElementsByTagName('body')->item(0);
+
+        if (!$body) {
+            return [
+                'type' => 'doc',
+                'version' => 1,
+                'content' => []
+            ];
+        }
 
         $content = [];
 
@@ -506,5 +520,121 @@ class TaskController
 
         return $protocol . $_SERVER['HTTP_HOST'];
     }
+
+    public function getLabels()
+    {
+        $jira = new \App\Services\JiraService();
+
+        $response = $jira->getLabels();
+        $data = json_decode($response, true);
+
+        return $data['values'] ?? [];
+    }
+
+    public function updateSummary()
+    {
+        header('Content-Type: application/json');
+
+        try {
+
+            $issueKey = $_POST['issueKey'] ?? null;
+            $summary  = trim($_POST['summary'] ?? '');
+
+            if (!$issueKey || empty($summary)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Missing data'
+                ]);
+                return;
+            }
+
+            $jira = new \App\Services\JiraService();
+
+            $result = $jira->updateIssue($issueKey, [
+                "fields" => [
+                    "summary" => $summary
+                ]
+            ]);
+
+            if (isset($result['error']) && $result['error']) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => $result
+                ]);
+                return;
+            }
+
+            // 🔥 CLEAR CACHE
+            $cache = new \App\Services\CacheService();
+            $cache->delete('board_data');
+
+            echo json_encode([
+                'success' => true
+            ]);
+
+        } catch (\Throwable $e) {
+
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function updateDueDate()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? null;
+        $duedate = $_POST['duedate'] ?? null;
+
+        if ($duedate === '') {
+            $duedate = null;
+        }
+
+        if (!$issueKey) {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        $jira = new \App\Services\JiraService();
+        $result = $jira->updateDueDate($issueKey, $duedate);
+
+        echo json_encode([
+            'success' => !isset($result['error'])
+        ]);
+    }
+
+    public function delete()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? null;
+
+        if (!$issueKey) {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        $jira = new \App\Services\JiraService();
+        $result = $jira->deleteTask($issueKey);
+
+        echo json_encode([
+            'success' => !isset($result['error'])
+        ]);
+    }
+
+
+//    public function debugTransition()
+//    {
+//        $issueKey = 'JIRA2024-97';
+//
+//        $jira = new \App\Services\JiraService();
+//        $transitions = $jira->getTransitions($issueKey);
+//
+//        foreach ($transitions as $t) {
+//            echo $t['id'] . ' - ' . $t['name'] . '<br>';
+//        }
+//    }
 
 }

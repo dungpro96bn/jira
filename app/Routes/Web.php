@@ -110,8 +110,38 @@ class Web
                 break;
 
             case '/attachment-proxy':
+                AuthMiddleware::check();
                 (new \App\Controllers\AttachmentController())->proxy();
                 break;
+
+            case '/task/labels':
+                AuthMiddleware::check();
+                if ($method === 'GET') {
+                    (new TaskController())->getLabels();
+                }
+                break;
+
+            case '/api/task/update-summary':
+                AuthMiddleware::check();
+                if ($method === 'POST') {
+                    (new TaskController())->updateSummary();
+                }
+                break;
+
+            case '/task/update-due-date':
+                AuthMiddleware::check();
+                (new TaskController())->updateDueDate();
+                break;
+
+            case '/task/delete':
+                AuthMiddleware::check();
+                (new TaskController())->delete();
+                break;
+
+//            case '/debug-transition':
+//                AuthMiddleware::check();
+//                (new TaskController())->debugTransition();
+//                break;
 
 
             /*

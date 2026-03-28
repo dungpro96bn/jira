@@ -29,11 +29,14 @@
     <link rel="shortcut icon" href="https://dev-scvweb.atlassian.net/s/xtxyma/b/6/b6b48b2829824b869586ac216d119363/_/favicon-software.ico">
     <link rel="mask-icon" sizes="any" href="https://dev-scvweb.atlassian.net/images/jira-safari-pintab-icon.svg" color="#2684FF">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
     <link rel="stylesheet" media="all" href="./assets/css/all.min.css">
     <link rel="stylesheet" media="all" href="./assets/css/style.css?ver=<?php random(); ?>">
     <link rel="stylesheet" media="all" href="./assets/css/main.css?ver=<?php random(); ?>">
+
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
     <script src="/assets/js/Sortable.min.js"></script>
     <script src="/assets/js/pro.js" crossorigin="anonymous"></script>
     <script src="/assets/js/main.js?ver=<?php random(); ?>"></script>

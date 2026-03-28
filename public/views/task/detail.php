@@ -94,7 +94,7 @@ $issueId = $task['id'];
     <div class="details">
         <h4 class="d-title">details</h4>
         <div class="details-item">
-            <label class="title">assignee</label>
+            <div class="title">assignee</div>
             <div class="item-info assignee-item">
                 <div class="assignee-wrapper">
                     <?php if(isset($task['fields']['assignee']) && $task['fields']['assignee'] !== null):?>
@@ -128,30 +128,56 @@ $issueId = $task['id'];
             </div>
         </div>
         <div class="details-item">
-            <label class="title">priority</label>
+            <div class="title">priority</div>
             <div class="priority-item item-info">
                 <span class="icon"><img loading="lazy" decoding="async" src="<?php echo $task['fields']['priority']['iconUrl']; ?>" alt=""></span>
                 <span class="priority-name"><?php echo $task['fields']['priority']['name']; ?></span>
             </div>
         </div>
+        <div class="details-item labels">
+            <div class="title">Labels</div>
+            <?php $labels = $task['fields']['labels'];
+            if($labels) :?>
+                <div class="label-list item-info">
+                    <?php foreach ($labels as $label) :?>
+                        <span class="label-item"><?= $label ?></span>
+                    <?php endforeach;?>
+                </div>
+            <?php endif;?>
+        </div>
         <div class="due-date details-item">
-            <label class="title">due date</label>
+            <div class="title">due date</div>
             <?php if (isset($task['fields']['duedate'])): ?>
                 <?php
                 $currentDate = date('Y-m-d');
                 $dateString = $task['fields']['duedate'];
                 $date = date_create_from_format('Y-m-d', $dateString);
-                $formattedDate = date_format($date, 'd M');
+                $formattedDate = date_format($date, 'F j, Y');
                 ?>
                 <div class="dueDate dueDate-item item-info <?php if ($currentDate >= $dateString) {
                     echo "deadline";
-                } ?>" title="<?php echo "Due Date: " . $task['fields']['duedate']; ?>">
+                } ?>" title="<?php echo "Due Date: " . $task['fields']['duedate']; ?>"
+                     data-issue-key="<?= $task['key'] ?>"
+                     data-date="<?= $task['fields']['duedate'] ?>">
                     <p>
                         <svg width="16" height="16" viewBox="0 0 24 24" role="presentation">
                             <path d="M4.995 5h14.01C20.107 5 21 5.895 21 6.994v12.012A1.994 1.994 0 0119.005 21H4.995A1.995 1.995 0 013 19.006V6.994C3 5.893 3.892 5 4.995 5zM5 9v9a1 1 0 001 1h12a1 1 0 001-1V9H5zm1-5a1 1 0 012 0v1H6V4zm10 0a1 1 0 012 0v1h-2V4zm-9 9v-2.001h2V13H7zm8 0v-2.001h2V13h-2zm-4 0v-2.001h2.001V13H11zm-4 4v-2h2v2H7zm4 0v-2h2.001v2H11zm4 0v-2h2v2h-2z" fill="currentColor" fill-rule="evenodd"></path>
                         </svg>
-                        <span><?php echo $formattedDate; ?></span>
+                        <span><?= $formattedDate ?></span>
                     </p>
+                    <input type="date" class="dueDate-input" value="<?= $task['fields']['duedate'] ?>">
+                </div>
+            <?php else: ?>
+                <div class="dueDate dueDate-item item-info" title="<?php echo "Due Date: " . $task['fields']['duedate']; ?>"
+                     data-issue-key="<?= $task['key'] ?>"
+                     data-date="<?= $task['fields']['duedate'] ?>">
+                    <p>
+                        <svg width="16" height="16" viewBox="0 0 24 24" role="presentation">
+                            <path d="M4.995 5h14.01C20.107 5 21 5.895 21 6.994v12.012A1.994 1.994 0 0119.005 21H4.995A1.995 1.995 0 013 19.006V6.994C3 5.893 3.892 5 4.995 5zM5 9v9a1 1 0 001 1h12a1 1 0 001-1V9H5zm1-5a1 1 0 012 0v1H6V4zm10 0a1 1 0 012 0v1h-2V4zm-9 9v-2.001h2V13H7zm8 0v-2.001h2V13h-2zm-4 0v-2.001h2.001V13H11zm-4 4v-2h2v2H7zm4 0v-2h2.001v2H11zm4 0v-2h2v2h-2z" fill="currentColor" fill-rule="evenodd"></path>
+                        </svg>
+                        <span></span>
+                    </p>
+                    <input type="date" class="dueDate-input" value="<?= $task['fields']['duedate'] ?>">
                 </div>
             <?php endif; ?>
         </div>

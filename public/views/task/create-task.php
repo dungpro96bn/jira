@@ -83,6 +83,33 @@
                                 </div>
                             </div>
 
+                            <div class="field-group">
+                                <label class="title">Labels</label>
+                                <div class="field-input">
+                                    <select id="labelSelect" name="labels[]" hidden="hidden" multiple>
+                                        <?php foreach ($labels as $label): ?>
+                                            <option value="<?= $label ?>"><?= $label ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="field-group priority">
+                                <label class="title">Priority</label>
+                                <div class="field-input">
+                                    <select id="prioritySelect" name="priority" hidden="hidden">
+                                        <option value="">Select priority</option>
+                                        <?php foreach ($priorities as $priority): ?>
+                                            <option value="<?= $priority['id'] ?>"
+                                                    data-icon-url="<?= $priority['iconUrl'] ?>">
+                                                <?= $priority['name'] ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+
+
                             <!-- Due date -->
                             <div class="field-group">
                                 <label class="title">Due date</label>
@@ -119,6 +146,38 @@
             </div>
         </div>
     </main>
+
+<script>
+    new TomSelect("#labelSelect", {
+        plugins: ['remove_button'],
+        persist: false,
+        create: true,
+        maxItems: null,
+        placeholder: "Select labels..."
+    });
+
+    new TomSelect("#prioritySelect", {
+        maxItems: 1,
+        render: {
+            option: function(data, escape) {
+                return `
+                <div>
+                    <img src="${data.iconUrl}" width="16" style="margin-right:6px;">
+                    ${escape(data.text)}
+                </div>
+            `;
+            },
+            item: function(data, escape) {
+                return `
+                <div>
+                    <img src="${data.iconUrl}" width="16" style="margin-right:6px;">
+                    ${escape(data.text)}
+                </div>
+            `;
+            }
+        }
+    });
+</script>
 
     <script>
         $(document).ready(function() {

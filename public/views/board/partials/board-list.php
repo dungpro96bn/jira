@@ -27,7 +27,9 @@ $columnOrder = [
     "VNCHECK",
     "FIX",
     "JPCHECK",
-    "Done"
+    "Done",
+    "Delivered",
+    "PENDING"
 ];
 
 $columns = [];
@@ -54,7 +56,16 @@ foreach ($issues as $issue) {
     }
 }
 
-$statusMap = [];
+$statusMap = [
+    'To Do' => '10095',
+    'In Progress' => '10096',
+    'Done' => '10097',
+    'VNCHECK' => '10173',
+    'FIX' => '10174',
+    'JPCHECK' => '10175',
+    'Delivered' => '10208',
+    'PENDING' => '10209'
+];
 
 foreach ($issues as $issue) {
     $name = $issue['fields']['status']['name'];
@@ -93,28 +104,52 @@ foreach ($issues as $issue) {
                     $childCount = count($childIssues);
                     ?>
                     <div class="task-item" data-issue-key="<?= $issue['key'] ?>" data-task-id="<?= $issueId ?>">
+                        <div class="more-actions" data-issue-key="<?= $issue['key'] ?>">
+                            <svg fill="none" viewBox="0 0 16 16" role="presentation">
+                                <path fill="currentcolor" fill-rule="evenodd" d="M0 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0m6.5 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0M13 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
                         <div class="taskItem-inner">
                             <a class="open-task" data-issue-key="<?= $issue['key'] ?>" href="#<?= $issueId ?>">
-                                <h4 class="board-summary">
+                                <h4 class="board-summary summary" data-issue-key="<?= $issue['key'] ?>">
                                     <?= htmlspecialchars($issue['fields']['summary']) ?>
                                 </h4>
+
+                                <?php $labels = $issue['fields']['labels'];
+                                if($labels) :?>
+                                <div class="label-list">
+                                    <?php foreach ($labels as $label) :?>
+                                        <span class="label-item"><?= $label ?></span>
+                                    <?php endforeach;?>
+                                </div>
+                                <?php endif;?>
 
                                 <?php if (isset($issue['fields']['duedate'])): ?>
                                     <?php
                                     $currentDate = date('Y-m-d');
                                     $dateString = $issue['fields']['duedate'];
                                     $date = date_create_from_format('Y-m-d', $dateString);
-                                    $formattedDate = date_format($date, 'd M');
+                                    $formattedDate = date_format($date, 'F j, Y');
                                     ?>
-                                    <div class="dueDate <?php if ($currentDate >= $dateString) {
+                                    <div class="dueDate pointer-events-none <?php if ($currentDate >= $dateString) {
                                         echo "deadline";
-                                    } ?>" title="<?php echo "Due Date: " . $issue['fields']['duedate']; ?>">
+                                    } ?>" title="<?php echo "Due Date: " . $issue['fields']['duedate']; ?>"
+                                         data-issue-key="<?= $issue['key'] ?>"
+                                         data-date="<?= $issue['fields']['duedate'] ?>">
                                         <p>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" role="presentation">
+                                            <?php if ($currentDate >= $dateString): ?>
+                                            <svg width="14" height="14" fill="none" viewBox="0 0 16 16" role="presentation" class="svg-deadline"><path fill="currentcolor" fill-rule="evenodd" d="M5.7 1.383c.996-1.816 3.605-1.817 4.602-.002l5.35 9.73C16.612 12.86 15.346 15 13.35 15H2.667C.67 15-.594 12.862.365 11.113zm3.288.72a1.125 1.125 0 0 0-1.972.002L1.68 11.834c-.41.75.132 1.666.987 1.666H13.35c.855 0 1.398-.917.986-1.667z" clip-rule="evenodd"></path><path fill="currentcolor" fill-rule="evenodd" d="M7.25 9V4h1.5v5z" clip-rule="evenodd"></path><path fill="currentcolor" d="M9 11.25a1 1 0 1 1-2 0 1 1 0 0 1 2 0"></path></svg>
+                                            <?php endif; ?>
+                                            <svg width="16" height="16" class="svg-no-deadline" viewBox="0 0 24 24" role="presentation">
                                                 <path d="M4.995 5h14.01C20.107 5 21 5.895 21 6.994v12.012A1.994 1.994 0 0119.005 21H4.995A1.995 1.995 0 013 19.006V6.994C3 5.893 3.892 5 4.995 5zM5 9v9a1 1 0 001 1h12a1 1 0 001-1V9H5zm1-5a1 1 0 012 0v1H6V4zm10 0a1 1 0 012 0v1h-2V4zm-9 9v-2.001h2V13H7zm8 0v-2.001h2V13h-2zm-4 0v-2.001h2.001V13H11zm-4 4v-2h2v2H7zm4 0v-2h2.001v2H11zm4 0v-2h2v2h-2z" fill="currentColor" fill-rule="evenodd"></path>
                                             </svg>
                                             <span><?php echo $formattedDate; ?></span>
                                         </p>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="dueDate pointer-events-none" title=""
+                                         data-issue-key="<?= $issue['key'] ?>"
+                                         data-date="<?= $issue['fields']['duedate'] ?>">
                                     </div>
                                 <?php endif; ?>
 
@@ -270,7 +305,14 @@ foreach ($issues as $issue) {
                                     <div class="left-taskInfo">
                                         <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium" alt=""><?php echo $issue["key"]; ?></p>
                                         <div class="main-scroll">
-                                            <h4 class="board-summary"><input type="text" value="<?php echo $issue['fields']['summary']; ?>"></h4>
+                                            <h4 class="board-summary">
+                                                <input
+                                                        type="text"
+                                                        class="input-summary"
+                                                        data-issue-key="<?= $issue['key'] ?>"
+                                                        data-original="<?= htmlspecialchars($issue['fields']['summary']) ?>"
+                                                        value="<?= htmlspecialchars($issue['fields']['summary']) ?>">
+                                            </h4>
                                             <div class="taskInfo-item description">
                                                 <p class="info-title">Description</p>
                                                 <div class="main-description input-rich">
@@ -466,7 +508,7 @@ foreach ($issues as $issue) {
                                         <div class="details">
                                             <h4 class="d-title">details</h4>
                                             <div class="details-item">
-                                                <label class="title">assignee</label>
+                                                <div class="title">assignee</div>
                                                 <div class="item-info assignee-item">
                                                     <div class="assignee-wrapper">
                                                         <?php if(isset($issue['fields']['assignee']) && $issue['fields']['assignee'] !== null):?>
@@ -500,30 +542,65 @@ foreach ($issues as $issue) {
                                                 </div>
                                             </div>
                                             <div class="details-item">
-                                                <label class="title">priority</label>
+                                                <div class="title">priority</div>
                                                 <div class="priority-item item-info">
                                                     <span class="icon"><img loading="lazy" decoding="async" src="<?php echo $issue['fields']['priority']['iconUrl']; ?>" alt=""></span>
                                                     <span class="priority-name"><?php echo $issue['fields']['priority']['name']; ?></span>
                                                 </div>
                                             </div>
+                                            <div class="details-item labels">
+                                                <div class="title">Labels</div>
+                                                <?php $labels = $issue['fields']['labels'];
+                                                if($labels) :?>
+                                                    <div class="label-list item-info">
+                                                        <?php foreach ($labels as $label) :?>
+                                                            <span class="label-item"><?= $label ?></span>
+                                                        <?php endforeach;?>
+                                                    </div>
+                                                <?php endif;?>
+                                            </div>
                                             <div class="due-date details-item">
-                                                <label class="title">due date</label>
+                                                <div class="title">due date</div>
+
                                                 <?php if (isset($issue['fields']['duedate'])): ?>
                                                     <?php
                                                     $currentDate = date('Y-m-d');
                                                     $dateString = $issue['fields']['duedate'];
                                                     $date = date_create_from_format('Y-m-d', $dateString);
-                                                    $formattedDate = date_format($date, 'd M');
+                                                    $formattedDate = date_format($date, 'F j, Y');
                                                     ?>
                                                     <div class="dueDate dueDate-item item-info <?php if ($currentDate >= $dateString) {
                                                         echo "deadline";
-                                                    } ?>" title="<?php echo "Due Date: " . $issue['fields']['duedate']; ?>">
+                                                    } ?>" title="<?php echo "Due Date: " . $issue['fields']['duedate']; ?>"
+                                                         data-issue-key="<?= $issue['key'] ?>"
+                                                         data-date="<?= $issue['fields']['duedate'] ?>">
                                                         <p>
-                                                            <svg width="16" height="16" viewBox="0 0 24 24" role="presentation">
+                                                            <?php if ($currentDate >= $dateString): ?>
+                                                                <svg width="14" height="14" fill="none" viewBox="0 0 16 16" role="presentation" class="svg-deadline">
+                                                                    <path fill="currentcolor" fill-rule="evenodd" d="M5.7 1.383c.996-1.816 3.605-1.817 4.602-.002l5.35 9.73C16.612 12.86 15.346 15 13.35 15H2.667C.67 15-.594 12.862.365 11.113zm3.288.72a1.125 1.125 0 0 0-1.972.002L1.68 11.834c-.41.75.132 1.666.987 1.666H13.35c.855 0 1.398-.917.986-1.667z" clip-rule="evenodd"></path>
+                                                                    <path fill="currentcolor" fill-rule="evenodd" d="M7.25 9V4h1.5v5z" clip-rule="evenodd"></path>
+                                                                    <path fill="currentcolor" d="M9 11.25a1 1 0 1 1-2 0 1 1 0 0 1 2 0"></path>
+                                                                </svg>
+                                                            <?php endif; ?>
+                                                            <svg width="16" height="16" class="svg-no-deadline" viewBox="0 0 24 24" role="presentation">
                                                                 <path d="M4.995 5h14.01C20.107 5 21 5.895 21 6.994v12.012A1.994 1.994 0 0119.005 21H4.995A1.995 1.995 0 013 19.006V6.994C3 5.893 3.892 5 4.995 5zM5 9v9a1 1 0 001 1h12a1 1 0 001-1V9H5zm1-5a1 1 0 012 0v1H6V4zm10 0a1 1 0 012 0v1h-2V4zm-9 9v-2.001h2V13H7zm8 0v-2.001h2V13h-2zm-4 0v-2.001h2.001V13H11zm-4 4v-2h2v2H7zm4 0v-2h2.001v2H11zm4 0v-2h2v2h-2z" fill="currentColor" fill-rule="evenodd"></path>
                                                             </svg>
-                                                            <span><?php echo $formattedDate; ?></span>
+                                                            <span><?= $formattedDate ?></span>
                                                         </p>
+                                                        <input type="date" class="dueDate-input" value="<?= $issue['fields']['duedate'] ?>">
+                                                        <button type="button" class="clear-due-date">✕</button>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="dueDate dueDate-item item-info" title="<?php echo "Due Date: " . $issue['fields']['duedate']; ?>"
+                                                         data-issue-key="<?= $issue['key'] ?>"
+                                                         data-date="<?= $issue['fields']['duedate'] ?>">
+                                                        <p>
+                                                            <svg width="16" height="16" class="svg-no-deadline" viewBox="0 0 24 24" role="presentation">
+                                                                <path d="M4.995 5h14.01C20.107 5 21 5.895 21 6.994v12.012A1.994 1.994 0 0119.005 21H4.995A1.995 1.995 0 013 19.006V6.994C3 5.893 3.892 5 4.995 5zM5 9v9a1 1 0 001 1h12a1 1 0 001-1V9H5zm1-5a1 1 0 012 0v1H6V4zm10 0a1 1 0 012 0v1h-2V4zm-9 9v-2.001h2V13H7zm8 0v-2.001h2V13h-2zm-4 0v-2.001h2.001V13H11zm-4 4v-2h2v2H7zm4 0v-2h2.001v2H11zm4 0v-2h2v2h-2z" fill="currentColor" fill-rule="evenodd"></path>
+                                                            </svg>
+                                                            <span></span>
+                                                        </p>
+                                                        <input type="date" class="dueDate-input" value="<?= $issue['fields']['duedate'] ?>">
                                                     </div>
                                                 <?php endif; ?>
                                             </div>
@@ -656,6 +733,9 @@ foreach ($issues as $issue) {
 
                         let issueKey = evt.item.dataset.issueKey;
                         let newStatusId = evt.to.dataset.statusId;
+
+                        console.log(issueKey);
+                        console.log(newStatusId);
 
                         $(".checkLoad").addClass("is-open");
 
