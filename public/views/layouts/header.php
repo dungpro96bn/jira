@@ -25,7 +25,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php title_page(); ?></title>
+    <title><?php title_page(); ?> - Jira Task</title>
     <link rel="shortcut icon" href="https://dev-scvweb.atlassian.net/s/xtxyma/b/6/b6b48b2829824b869586ac216d119363/_/favicon-software.ico">
     <link rel="mask-icon" sizes="any" href="https://dev-scvweb.atlassian.net/images/jira-safari-pintab-icon.svg" color="#2684FF">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -39,10 +39,19 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
     <script src="/assets/js/Sortable.min.js"></script>
     <script src="/assets/js/pro.js" crossorigin="anonymous"></script>
+    <script src="/assets/js/users.js?ver=<?php random(); ?>"></script>
     <script src="/assets/js/main.js?ver=<?php random(); ?>"></script>
     <script type="module" src="/js/create-task.js"></script>
 </head>
-<body>
+
+<?php
+$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+$currentUrl = $scheme . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+$parsedUrl = parse_url($currentUrl);
+$path = trim($parsedUrl['path'], '/');
+?>
+<body class="<?= $path; ?>">
 
 <?php
 $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
@@ -65,6 +74,11 @@ if($path == '/login' || $path == '/register'):?>
                             <path d="M5.25 3C4.00736 3 3 4.00736 3 5.25V18.75C3 19.9926 4.00736 21 5.25 21H18.75C19.9926 21 21 19.9926 21 18.75V5.25C21 4.00736 19.9926 3 18.75 3H5.25ZM10.7803 8.78033L8.78033 10.7803C8.48744 11.0732 8.01256 11.0732 7.71967 10.7803L6.71967 9.78033C6.42678 9.48744 6.42678 9.01256 6.71967 8.71967C7.01256 8.42678 7.48744 8.42678 7.78033 8.71967L8.25 9.18934L9.71967 7.71967C10.0126 7.42678 10.4874 7.42678 10.7803 7.71967C11.0732 8.01256 11.0732 8.48744 10.7803 8.78033ZM16.75 8.5C17.1642 8.5 17.5 8.83579 17.5 9.25C17.5 9.66421 17.1642 10 16.75 10H13.25C12.8358 10 12.5 9.66421 12.5 9.25C12.5 8.83579 12.8358 8.5 13.25 8.5H16.75ZM12.5001 14.75C12.5001 14.3358 12.8358 14 13.2501 14H16.7499C17.1642 14 17.4999 14.3358 17.4999 14.75C17.4999 15.1642 17.1642 15.5 16.7499 15.5H13.2501C12.8358 15.5 12.5001 15.1642 12.5001 14.75ZM10.7803 13.2197C11.0732 13.5126 11.0732 13.9874 10.7803 14.2803L8.78033 16.2803C8.48744 16.5732 8.01256 16.5732 7.71967 16.2803L6.71967 15.2803C6.42678 14.9874 6.42678 14.5126 6.71967 14.2197C7.01256 13.9268 7.48744 13.9268 7.78033 14.2197L8.25 14.6893L9.71967 13.2197C10.0126 12.9268 10.4874 12.9268 10.7803 13.2197Z" fill="#212121"/>
                         </svg><span>Create Task</span></a>
                 </li>
+                <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                    <li class="menu-item">
+                        <a href="/users"><img src="../../assets/images/icon-dashboard.svg" alt="">Admin Panel</a>
+                    </li>
+                <?php endif; ?>
                 <li class="menu-item">
                     <a class="logout-btn" href="/logout"><span>Sign out</span></a>
                 </li>

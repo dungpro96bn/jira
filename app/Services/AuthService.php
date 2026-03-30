@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Models\UserModel;
 
 class AuthService
 {
@@ -10,7 +10,8 @@ class AuthService
 
     public function __construct()
     {
-        $this->userModel = new User();
+        $db = require __DIR__ . '/../Config/database.php';
+        $this->userModel = new UserModel($db);
     }
 
     /*
@@ -66,10 +67,10 @@ class AuthService
         }
 
         //CHECK PASSWORD >= 6
-        if (strlen($password) < 6) {
+        if (strlen($password) < 10) {
             return [
                 'success' => false,
-                'message' => 'Password must be at least 6 characters'
+                'message' => 'Password must be at least 10 characters'
             ];
         }
 
@@ -95,4 +96,58 @@ class AuthService
             'success' => true
         ];
     }
+
+    public function registerNew($username, $email, $role, $password)
+    {
+        if (empty($username) || empty($email) || empty($password)) {
+            return [
+                'success' => false,
+                'message' => 'All fields are required'
+            ];
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'success' => false,
+                'message' => 'Invalid email format'
+            ];
+        }
+
+        if (strlen($password) < 10) {
+            return [
+                'success' => false,
+                'message' => 'Password must be at least 10 characters'
+            ];
+        }
+
+        if ($this->userModel->existsByUsername($username)) {
+            return [
+                'success' => false,
+                'message' => 'Username already exists'
+            ];
+        }
+
+        if ($this->userModel->existsByEmail($email)) {
+            return [
+                'success' => false,
+                'message' => 'Email already exists'
+            ];
+        }
+
+        // validate role
+        $validRoles = ['admin', 'editor', 'user'];
+        if (!in_array($role, $validRoles)) {
+            $role = 'user';
+        }
+
+
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $this->userModel->create($username, $email, $password, $role);
+
+        return [
+            'success' => true
+        ];
+    }
+
 }

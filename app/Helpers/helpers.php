@@ -25,6 +25,10 @@ function title_page(){
         echo "Register";
     } elseif ($path == '/create-task'){
         echo "Create Task";
+    } elseif ($path == '/users'){
+        echo "Users";
+    } elseif ($path == '/user-new'){
+        echo "Add New User";
     }
 
 }

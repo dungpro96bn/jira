@@ -49,26 +49,24 @@ class AuthController
 
         if ($result['success']) {
 
-            // 🔐 Regenerate session
+            // Regenerate session
             session_regenerate_id(true);
 
             $user = $result['user'];
 
-            $_SESSION['user'] = $result['user'];
+            $_SESSION['user'] = $user;
 
-            switch ($user['role']) {
-                case 'admin':
-                    header("Location: /board");
-                    break;
+            // redirect theo role
+            $redirectMap = [
+                'admin'  => '/board',
+                'editor' => '/create-task',
+                'user'   => '/create-task',
+            ];
 
-                case 'editor':
-                default:
-                    header("Location: /create-task");
-                    break;
-            }
+            $role = $user['role'] ?? 'user';
 
+            header("Location: " . ($redirectMap[$role] ?? '/create-task'));
             exit;
-
         } else {
 
             $error = $result['message'];
@@ -156,6 +154,11 @@ class AuthController
 
         $error = $result['message'];
         require dirname(__DIR__, 2) . '/public/views/auth/register.php';
+    }
+
+    public function users()
+    {
+        require dirname(__DIR__, 2) . '/public/views/auth/users.php';
     }
 
 }

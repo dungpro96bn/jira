@@ -5,6 +5,7 @@ namespace App\Routes;
 use App\Controllers\AuthController;
 use App\Controllers\TaskController;
 use App\Middleware\AuthMiddleware;
+use App\Controllers\UserController;
 
 class Web
 {
@@ -40,6 +41,54 @@ class Web
                     (new AuthController())->register();
                 }
                 break;
+
+
+            case '/users':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new UserController())->index();
+                break;
+
+            case '/users/store':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new UserController())->store();
+                break;
+
+            case '/users/update':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new UserController())->update();
+                break;
+
+            case '/users/delete':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new UserController())->delete();
+                break;
+
+            case '/users/change-password':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new UserController())->changePassword();
+                break;
+
+            case '/user-new':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new UserController())->userNew();
+                } elseif ($method === 'POST') {
+                    (new UserController())->registerUserNew();
+                }
+                break;
+
 
             /*
             |--------------------------------------------------------------------------
