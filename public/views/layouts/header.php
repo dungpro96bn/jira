@@ -33,6 +33,7 @@
     <link rel="stylesheet" media="all" href="./assets/css/all.min.css">
     <link rel="stylesheet" media="all" href="./assets/css/style.css?ver=<?php random(); ?>">
     <link rel="stylesheet" media="all" href="./assets/css/main.css?ver=<?php random(); ?>">
+    <link rel="stylesheet" media="all" href="./assets/css/summary.css?ver=<?php random(); ?>">
 
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/tinymce/tinymce.min.js" referrerpolicy="origin"></script>

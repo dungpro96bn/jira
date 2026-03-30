@@ -470,6 +470,25 @@ class JiraService
         }
     }
 
+    public function getAllIssues()
+    {
+        try {
 
+            $response = $this->client->get('/rest/api/3/search/jql', [
+                'query' => [
+                    'jql' => 'project = "' . $this->projectKey . '"',
+                    'fields' => 'summary,status',
+                    'maxResults' => 1000
+                ]
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+
+            return $data['issues'] ?? [];
+
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
 
 }

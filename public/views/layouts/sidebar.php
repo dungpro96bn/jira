@@ -19,6 +19,10 @@ $path = $parsedUrl['path'];
             <li class="link-item">
                 <a href="/user-new" class="<?= $path == '/user-new' ? 'active' : '' ?>">Add New User</a>
             </li>
+            <li class="link-item">
+                <a href="/summary" class="<?= $path == '/summary' ? 'active' : '' ?>">Summary</a>
+            </li>
+
         </ul>
     </div>
 </aside>

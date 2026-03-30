@@ -81,4 +81,29 @@ class BoardController
         echo json_encode(['success' => $result]);
     }
 
+    // /api/board/summary
+    public function summary()
+    {
+        $jira = new \App\Services\JiraService();
+
+        $issues = $jira->getAllIssues(); // bạn đang có rồi
+
+        $summary = [];
+
+        foreach ($issues as $issue) {
+            $status = $issue['fields']['status']['name'];
+
+            if (!isset($summary[$status])) {
+                $summary[$status] = 0;
+            }
+
+            $summary[$status]++;
+        }
+
+        echo json_encode([
+            'total' => count($issues),
+            'status' => $summary
+        ]);
+    }
+
 }

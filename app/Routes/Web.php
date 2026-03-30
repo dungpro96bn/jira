@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\TaskController;
 use App\Middleware\AuthMiddleware;
 use App\Controllers\UserController;
+use App\Controllers\SummaryController;
 
 class Web
 {
@@ -191,6 +192,27 @@ class Web
 //                AuthMiddleware::check();
 //                (new TaskController())->debugTransition();
 //                break;
+
+            case '/summary':
+                AuthMiddleware::check();
+
+                if ($method === 'GET') {
+                    (new SummaryController())->index();
+                }
+                break;
+
+            case '/api/summary':
+                AuthMiddleware::check();
+
+                if ($method === 'GET') {
+                    (new SummaryController())->getSummary();
+                }
+                break;
+
+            case '/api/summary/clear':
+                AuthMiddleware::check();
+                (new SummaryController())->clearCache();
+                break;
 
 
             /*

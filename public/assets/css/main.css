@@ -1939,7 +1939,7 @@ main:after{
 }
 
 
-.user-container h2{
+.column-main .top-title h2{
     text-align: left;
     margin-bottom: 40px;
     color: #0F2538;
@@ -2209,15 +2209,6 @@ input:disabled {
     flex-wrap: wrap;
     column-gap: 20px;
 }
-.users,
-.user-new{
-    background-image: unset;
-    background: #fff;
-}
-.users main:after,
-.user-new main:after{
-    display: none;
-}
 
 #sidebar{
     width: 280px;
@@ -2288,6 +2279,9 @@ input:disabled {
     margin-top: 20px;
     font-size: 14px;
     color: #0b8a09;
+}
+.column-main{
+
 }
 
 

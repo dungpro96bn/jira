@@ -29,6 +29,8 @@ function title_page(){
         echo "Users";
     } elseif ($path == '/user-new'){
         echo "Add New User";
+    } elseif ($path == '/summary'){
+        echo "Summary";
     }
 
 }
