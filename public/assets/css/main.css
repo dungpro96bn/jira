@@ -1941,7 +1941,7 @@ main:after{
 
 .column-main .top-title h2{
     text-align: left;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
     color: #0F2538;
     font-size: 24px;
     font-style: normal;
@@ -2282,6 +2282,35 @@ input:disabled {
 }
 .column-main{
 
+}
+
+
+.waiting-page{
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 860px;
+}
+.waiting-container{
+    width: 100%;
+    background: #fff;
+    border-radius: 24px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.waiting-container h2{
+    margin-bottom: 20px;
+    font-size: 36px;
+    line-height: 1.4;
+}
+.waiting-container p{
+    font-size: 18px;
+    line-height: 1.6;
 }
 
 

@@ -13,13 +13,29 @@ class AuthController
     */
     public function showLogin()
     {
-        // Nếu đã login rồi thì không cho vào lại login
         if (isset($_SESSION['user'])) {
-            header("Location: /board");
+
+            $role = $_SESSION['user']['role'] ?? 'user';
+
+            if ($role === 'admin') {
+                header("Location: /board");
+                exit;
+            } elseif ($role === 'editor') {
+                header("Location: /create-task");
+                exit;
+            }
+
+            //user thì chuyển sang trang chờ duyệt
+            header("Location: /waiting-approval");
             exit;
         }
 
         require __DIR__ . '/../../public/views/auth/login.php';
+    }
+
+    public function waiting()
+    {
+        require __DIR__ . '/../../public/views/auth/waiting.php';
     }
 
     /*
@@ -60,7 +76,7 @@ class AuthController
             $redirectMap = [
                 'admin'  => '/board',
                 'editor' => '/create-task',
-                'user'   => '/create-task',
+                'user'   => '/waiting-approval',
             ];
 
             $role = $user['role'] ?? 'user';

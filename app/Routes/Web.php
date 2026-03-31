@@ -43,7 +43,17 @@ class Web
                 }
                 break;
 
+            case '/waiting-approval':
+                AuthMiddleware::check();
 
+                if ($method === 'GET') {
+                    (new AuthController())->waiting();
+                }
+                break;
+
+
+            // admin permission
+            //===============================
             case '/users':
                 AuthMiddleware::check();
                 \App\Helpers\Role::check(['admin']);
@@ -90,6 +100,58 @@ class Web
                 }
                 break;
 
+            case '/summary':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->index();
+                }
+                break;
+
+            case '/api/summary':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->getSummary();
+                }
+                break;
+
+            case '/api/summary/clear':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new SummaryController())->clearCache();
+                break;
+
+            case '/api/summary/priority':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                (new SummaryController())->getPriority();
+                break;
+
+            case '/api/summary/workload':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->getWorkload();
+                }
+                break;
+
+            case '/api/summary/types':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->getTypesTask();
+                }
+                break;
+
+
+
 
             /*
             |--------------------------------------------------------------------------
@@ -98,7 +160,7 @@ class Web
             */
 
             case '/create-task':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
 
                 if ($method === 'GET') {
                     (new TaskController())->index();
@@ -108,22 +170,22 @@ class Web
                 break;
 
             case '/board':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\BoardController())->index();
                 break;
 
             case '/api/board':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\BoardController())->list();
                 break;
 
             case '/api/board/move':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\BoardController())->move();
                 break;
 
             case '/task/detail':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
 
                 if ($method === 'GET') {
                     (new TaskController())->detail();
@@ -134,17 +196,17 @@ class Web
                 break;
 
             case '/api/board/get-transitions':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\BoardController())->getTransitions();
                 break;
 
             case '/api/board/assign':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\BoardController())->assign();
                 break;
 
             case '/task/update-description':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
 
                 if ($method === 'POST') {
                     (new TaskController())->updateDescription();
@@ -152,7 +214,7 @@ class Web
                 break;
 
             case '/task/upload-image':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
 
                 if ($method === 'POST') {
                     (new TaskController())->uploadImage();
@@ -160,59 +222,35 @@ class Web
                 break;
 
             case '/attachment-proxy':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new \App\Controllers\AttachmentController())->proxy();
                 break;
 
             case '/task/labels':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 if ($method === 'GET') {
                     (new TaskController())->getLabels();
                 }
                 break;
 
             case '/api/task/update-summary':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 if ($method === 'POST') {
                     (new TaskController())->updateSummary();
                 }
                 break;
 
             case '/task/update-due-date':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new TaskController())->updateDueDate();
                 break;
 
             case '/task/delete':
-                AuthMiddleware::check();
+                AuthMiddleware::checkAccess();
                 (new TaskController())->delete();
                 break;
 
-//            case '/debug-transition':
-//                AuthMiddleware::check();
-//                (new TaskController())->debugTransition();
-//                break;
 
-            case '/summary':
-                AuthMiddleware::check();
-
-                if ($method === 'GET') {
-                    (new SummaryController())->index();
-                }
-                break;
-
-            case '/api/summary':
-                AuthMiddleware::check();
-
-                if ($method === 'GET') {
-                    (new SummaryController())->getSummary();
-                }
-                break;
-
-            case '/api/summary/clear':
-                AuthMiddleware::check();
-                (new SummaryController())->clearCache();
-                break;
 
 
             /*

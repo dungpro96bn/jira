@@ -32,11 +32,22 @@ if ($uri !== '/') {
 */
 
 if ($uri === '/') {
-    if (isset($_SESSION['user'])) {
-        header('Location: /board');
-    } else {
+
+    if (!isset($_SESSION['user'])) {
         header('Location: /login');
+        exit;
     }
+
+    $role = $_SESSION['user']['role'] ?? 'user';
+
+    if ($role === 'admin') {
+        header('Location: /board');
+    } elseif ($role === 'editor'){
+        header('Location: /create-task');
+    } else {
+        header('Location: /waiting-approval');
+    }
+
     exit;
 }
 

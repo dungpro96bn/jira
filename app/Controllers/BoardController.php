@@ -86,7 +86,7 @@ class BoardController
     {
         $jira = new \App\Services\JiraService();
 
-        $issues = $jira->getAllIssues(); // bạn đang có rồi
+        $issues = $jira->getAllIssues();
 
         $summary = [];
 

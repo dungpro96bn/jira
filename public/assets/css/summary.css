@@ -1,15 +1,36 @@
 
+
+.summary-block .summary-title{
+    margin-bottom: 36px;
+}
+.summary-block .summary-title h2 {
+    text-align: left;
+    margin-bottom: 0px;
+    color: #0F2538;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+}
+.summary-block .summary-title p{
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
+    color: #0F2538;
+}
+
 .summary-box {
     display: flex;
-    gap: 40px;
+    gap: 60px;
     align-items: center;
-    padding: 20px;
+    justify-content: center;
+    padding: 0;
     border-radius: 10px;
 }
 
 .chart-wrap {
     position: relative;
-    width: 260px;
+    width: 300px;
 }
 
 .total {
@@ -34,12 +55,14 @@
     display: flex;
     align-items: center;
     margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .legend span {
-    width: 12px;
-    height: 12px;
-    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    margin-right: 9px;
+    border-radius: 2px;
 }
 .column-main{
     position: relative;
@@ -76,10 +99,113 @@
     color: #fff;
     font-size: 14px;
     font-weight: 500;
-    margin-top: 20px;
+    margin-bottom: 40px;
     cursor: pointer;
     transition: .3s;
 }
 #refreshSummary:hover{
     background: #6396FF;
+}
+.summary-block{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.15);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+.summary-block .summary-chart{
+    width: 100%;
+}
+.summary-block:last-child{
+    margin-bottom: 0;
+}
+#statusChart{
+    width: 300px !important;
+    height: 300px !important;
+}
+
+
+
+.team-workload {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.workload-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.workload-user {
+    display: flex;
+    align-items: center;
+    width: 200px;
+}
+
+.workload-user img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.workload-bar {
+    flex: 1;
+    background: #eee;
+    height: 24px;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.workload-bar-inner {
+    height: 100%;
+    background: #888;
+}
+
+.workload-percent {
+    font-size: 14px;
+    width: 40px;
+    text-align: right;
+}
+
+
+.types-work {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.types-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.types-name {
+    width: 150px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.types-bar {
+    flex: 1;
+    height: 24px;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.types-bar-inner {
+    height: 100%;
+    background: #888;
+}
+
+.types-percent {
+    width: 40px;
+    text-align: right;
+    font-size: 14px;
 }
