@@ -2,7 +2,14 @@
 <div class="left-taskInfo">
     <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium" alt=""><?php echo $task["key"]; ?></p>
     <div class="main-scroll">
-        <h4 class="board-summary"><input type="text" value="<?php echo $task['fields']['summary']; ?>"></h4>
+        <h4 class="board-summary summary">
+            <input
+                    type="text"
+                    class="input-summary"
+                    data-issue-key="<?= $task['key'] ?>"
+                    data-original="<?= htmlspecialchars($task['fields']['summary']) ?>"
+                    value="<?= htmlspecialchars($task['fields']['summary']) ?>">
+        </h4>
         <div class="taskInfo-item description">
             <p class="info-title">Description</p>
             <div class="main-description input-rich">
@@ -127,13 +134,49 @@ $issueId = $task['id'];
                 </div>
             </div>
         </div>
+
         <div class="details-item">
             <div class="title">priority</div>
-            <div class="priority-item item-info">
-                <span class="icon"><img loading="lazy" decoding="async" src="<?php echo $task['fields']['priority']['iconUrl']; ?>" alt=""></span>
-                <span class="priority-name"><?php echo $task['fields']['priority']['name']; ?></span>
+
+            <div class="priority-wrapper priority-item item-info">
+
+                <!-- current -->
+                <div class="priority-selected">
+                    <span class="icon">
+                        <img src="<?= $task['fields']['priority']['iconUrl'] ?>">
+                    </span>
+                    <span class="priority-name">
+                        <?= $task['fields']['priority']['name'] ?>
+                    </span>
+                </div>
+
+                <!-- dropdown -->
+                <div class="priority-dropdown hidden">
+
+                    <?php
+                    $priorities = [
+                        ['name' => 'Highest', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/highest_new.svg'],
+                        ['name' => 'High', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/high_new.svg'],
+                        ['name' => 'Medium', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/medium_new.svg'],
+                        ['name' => 'Low', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/low_new.svg'],
+                        ['name' => 'Lowest', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/lowest_new.svg'],
+                    ];
+                    ?>
+
+                    <?php foreach ($priorities as $p): ?>
+                        <div class="priority-option" data-name="<?= $p['name'] ?>">
+                            <span class="icon">
+                                <img src="<?= $p['icon'] ?>">
+                            </span>
+                            <span class="name"><?= $p['name'] ?></span>
+                        </div>
+                    <?php endforeach; ?>
+
+                </div>
+
             </div>
         </div>
+
         <div class="details-item labels">
             <div class="title">Labels</div>
             <?php $labels = $task['fields']['labels'];

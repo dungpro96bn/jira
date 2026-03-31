@@ -491,4 +491,84 @@ class JiraService
         }
     }
 
+    public function updatePriority($issueKey, $priorityName)
+    {
+        return $this->client->put("rest/api/3/issue/{$issueKey}", [
+            'json' => [
+                'fields' => [
+                    'priority' => [
+                        'name' => $priorityName
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    public function allLabels()
+    {
+        $cacheFile = __DIR__ . '/../../storage/cache/labels.json';
+        $cacheTime = 3600; // 1 giờ
+
+        // Nếu có cache và chưa hết hạn → dùng luôn
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
+            return json_decode(file_get_contents($cacheFile), true);
+        }
+
+        // Nếu không có cache → gọi API
+        $allLabels = [];
+        $startAt = 0;
+        $maxResults = 50;
+
+        try {
+            do {
+                $response = $this->client->get('/rest/api/3/label', [
+                    'query' => [
+                        'startAt' => $startAt,
+                        'maxResults' => $maxResults
+                    ]
+                ]);
+
+                $data = json_decode($response->getBody(), true);
+
+                $labels = $data['values'] ?? [];
+                $allLabels = array_merge($allLabels, $labels);
+
+                $startAt += $maxResults;
+
+            } while (!empty($labels));
+
+            // Lưu cache
+            if (!empty($allLabels)) {
+                // tạo folder nếu chưa có
+                if (!file_exists(dirname($cacheFile))) {
+                    mkdir(dirname($cacheFile), 0777, true);
+                }
+
+                file_put_contents($cacheFile, json_encode($allLabels));
+            }
+
+        } catch (\Exception $e) {
+            // nếu API lỗi → fallback cache cũ (nếu có)
+            if (file_exists($cacheFile)) {
+                return json_decode(file_get_contents($cacheFile), true);
+            }
+            return [];
+        }
+
+        return $allLabels;
+    }
+
+    public function updateLabels($issueKey, $labels)
+    {
+        return $this->client->put("/rest/api/3/issue/{$issueKey}", [
+            'json' => [
+                'update' => [
+                    'labels' => [
+                        ['set' => array_values($labels)]
+                    ]
+                ]
+            ]
+        ]);
+    }
+
 }

@@ -16,14 +16,39 @@ class BoardController
     // /board
     public function index()
     {
+        $jira = new \App\Services\JiraService();
+
+        $issues = $jira->getAllIssues();
+
+        $allLabels = [];
+
+        foreach ($issues as $issue) {
+            if (!empty($issue['fields']['labels'])) {
+                foreach ($issue['fields']['labels'] as $label) {
+                    $allLabels[$label] = true;
+                }
+            }
+        }
+
+        $allLabels = array_keys($allLabels);
+
+        // đảm bảo biến tồn tại trong view
+        extract([
+            'issues' => $issues,
+            'allLabels' => $allLabels
+        ]);
+
         require dirname(__DIR__, 2) . '/public/views/board/index.php';
     }
 
     // /api/board
     public function list()
     {
+        $jira = new \App\Services\JiraService();
         $issues = $this->jiraService->getBoardTasks();
         $users = $this->jiraService->getAssignableUsers();
+//        $allLabels = $jira->allLabels();
+        $allLabels = $this->jiraService->getAllLabels();
 
         require __DIR__ . '/../../public/views/board/partials/board-list.php';
     }

@@ -117,7 +117,7 @@ foreach ($issues as $issue) {
 
                                 <?php $labels = $issue['fields']['labels'];
                                 if($labels) :?>
-                                <div class="label-list">
+                                <div class="label-list" data-issue-key="<?= $issue['key'] ?>">
                                     <?php foreach ($labels as $label) :?>
                                         <span class="label-item"><?= $label ?></span>
                                     <?php endforeach;?>
@@ -155,7 +155,7 @@ foreach ($issues as $issue) {
 
                                 <div class="key-assignee">
                                     <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium" alt=""><?php echo $issue["key"]; ?></p>
-                                    <p class="icon-priority" title="<?php echo $issue['fields']['priority']['name']; ?>"><img loading="lazy" decoding="async" src="<?php echo $issue['fields']['priority']['iconUrl']; ?>" alt=""></p>
+                                    <p class="icon-priority" data-issue-key="<?= $issue['key'] ?>" title="<?php echo $issue['fields']['priority']['name']; ?>"><img loading="lazy" decoding="async" src="<?php echo $issue['fields']['priority']['iconUrl']; ?>" alt=""></p>
                                     <?php if(isset($issue['fields']['assignee']) && $issue['fields']['assignee'] !== null):?>
                                         <p class="assignee"><img loading="lazy" decoding="async" title="<?php echo $issue['fields']['assignee']["displayName"]; ?>" src="<?php echo $issue['fields']['assignee']["avatarUrls"]["48x48"]; ?>" alt=""></p>
                                     <?php else: ?>
@@ -270,7 +270,7 @@ foreach ($issues as $issue) {
 
                                             <div class="taskChild-item">
                                                 <a class="open-task-child" data-issue-key="<?= $child['key'] ?>" href="#" data-id="<?= $child['id'] ?>">
-                                                    <h3 class="title-taskChild"><?php echo $child['fields']['summary']; ?></h3>
+                                                    <h3 class="title-taskChild summary" data-issue-key="<?= $child['key'] ?>"><?php echo $child['fields']['summary']; ?></h3>
                                                     <div class="key-assignee-taskChild">
                                                         <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium" alt=""><?php echo $child["key"]; ?></p>
                                                         <div class="status-assignee">
@@ -305,7 +305,7 @@ foreach ($issues as $issue) {
                                     <div class="left-taskInfo">
                                         <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium" alt=""><?php echo $issue["key"]; ?></p>
                                         <div class="main-scroll">
-                                            <h4 class="board-summary">
+                                            <h4 class="board-summary summary">
                                                 <input
                                                         type="text"
                                                         class="input-summary"
@@ -482,9 +482,9 @@ foreach ($issues as $issue) {
                                                             <?php foreach ($childIssues as $childIssue):?>
                                                                 <div class="taskChild-item open-task-child" data-issue-key="<?= $childIssue['key'] ?>" data-id="<?= $childIssue['id'] ?>">
                                                                     <p class="key"><img loading="lazy" decoding="async" src="https://dev-scvweb.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium" alt=""><?php echo $childIssue["key"]; ?></p>
-                                                                    <h3 class="title-taskChild"><?php echo $childIssue['fields']['summary']; ?></h3>
+                                                                    <h3 class="title-taskChild summary" data-issue-key="<?= $childIssue['key'] ?>"><?php echo $childIssue['fields']['summary']; ?></h3>
                                                                     <div class="status-assignee">
-                                                                        <p class="icon-priority" title="<?php echo $childIssue['fields']['priority']['name']; ?>"><img loading="lazy" decoding="async" src="<?php echo $childIssue['fields']['priority']['iconUrl']; ?>" alt=""></p>
+                                                                        <p class="icon-priority" data-issue-key="<?= $childIssue['key'] ?>" title="<?php echo $childIssue['fields']['priority']['name']; ?>"><img loading="lazy" decoding="async" src="<?php echo $childIssue['fields']['priority']['iconUrl']; ?>" alt=""></p>
                                                                         <?php if(isset($childIssue['fields']['assignee']) && $childIssue['fields']['assignee'] !== null):?>
                                                                             <p class="assignee"><img loading="lazy" decoding="async" title="<?php echo $childIssue['fields']['assignee']["displayName"]; ?>" src="<?php echo $childIssue['fields']['assignee']["avatarUrls"]["48x48"]; ?>" alt=""></p>
                                                                         <?php else: ?>
@@ -503,7 +503,7 @@ foreach ($issues as $issue) {
                                         </div>
                                     </div>
 
-                                    <div class="right-taskInfo">
+                                    <div class="right-taskInfo" data-issue-key="<?= $issue['key'] ?>" data-task-id="<?= $issueId ?>">
                                         <p class="status" style="background: #669df1;color: #292a2e;"><?php echo $issue['fields']['status']['name'];?></p>
                                         <div class="details">
                                             <h4 class="d-title">details</h4>
@@ -541,24 +541,119 @@ foreach ($issues as $issue) {
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="details-item">
                                                 <div class="title">priority</div>
-                                                <div class="priority-item item-info">
-                                                    <span class="icon"><img loading="lazy" decoding="async" src="<?php echo $issue['fields']['priority']['iconUrl']; ?>" alt=""></span>
-                                                    <span class="priority-name"><?php echo $issue['fields']['priority']['name']; ?></span>
+
+                                                <div class="priority-wrapper priority-item item-info">
+
+                                                    <!-- current -->
+                                                    <div class="priority-selected">
+                                                        <span class="icon">
+                                                            <img src="<?= $issue['fields']['priority']['iconUrl'] ?>">
+                                                        </span>
+                                                        <span class="priority-name">
+                                                            <?= $issue['fields']['priority']['name'] ?>
+                                                        </span>
+                                                    </div>
+
+                                                    <!-- dropdown -->
+                                                    <div class="priority-dropdown hidden">
+
+                                                        <?php
+                                                        $priorities = [
+                                                            ['name' => 'Highest', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/highest_new.svg'],
+                                                            ['name' => 'High', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/high_new.svg'],
+                                                            ['name' => 'Medium', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/medium_new.svg'],
+                                                            ['name' => 'Low', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/low_new.svg'],
+                                                            ['name' => 'Lowest', 'icon' => 'https://dev-scvweb.atlassian.net/images/icons/priorities/lowest_new.svg'],
+                                                        ];
+                                                        ?>
+
+                                                        <?php foreach ($priorities as $p): ?>
+                                                            <div class="priority-option" data-name="<?= $p['name'] ?>">
+                                                                    <span class="icon">
+                                                                        <img src="<?= $p['icon'] ?>">
+                                                                    </span>
+                                                                <span class="name"><?= $p['name'] ?></span>
+                                                            </div>
+                                                        <?php endforeach; ?>
+
+                                                    </div>
+
                                                 </div>
                                             </div>
+
+<!--                                            <div class="details-item labels">-->
+<!--                                                <div class="title">Labels</div>-->
+<!--                                                --><?php //$labels = $issue['fields']['labels'];
+//                                                if($labels) :?>
+<!--                                                    <div class="label-list item-info">-->
+<!--                                                        --><?php //foreach ($labels as $label) :?>
+<!--                                                            <span class="label-item">--><?php //= $label ?><!--</span>-->
+<!--                                                        --><?php //endforeach;?>
+<!--                                                    </div>-->
+<!--                                                --><?php //else: ?>
+<!--                                                <div class="label-list item-info">-->
+<!--                                                    <span class="">none</span>-->
+<!--                                                </div>-->
+<!--                                                --><?php //endif;?>
+<!--                                            </div>-->
+
+<!--                                            <div class="field-group details-item labels">-->
+<!--                                                <div class="title">Labels</div>-->
+<!--                                                --><?php //$labels = $issue['fields']['labels'];
+//                                                if($labels) :?>
+<!--                                                    <div class="label-list item-info">-->
+<!--                                                        --><?php //foreach ($labels as $label) :?>
+<!--                                                            <span class="label-item">--><?php //= $label ?><!--</span>-->
+<!--                                                        --><?php //endforeach;?>
+<!--                                                    </div>-->
+<!--                                                --><?php //endif;?>
+<!--                                                <div class="field-input">-->
+<!--                                                    <select class="allLablesSelect" name="labels[]" multiple>-->
+<!--                                                        --><?php //foreach ($allLabels as $label): ?>
+<!--                                                            <option value="--><?php //= $label ?><!--">--><?php //= $label ?><!--</option>-->
+<!--                                                        --><?php //endforeach; ?>
+<!--                                                    </select>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+
+
                                             <div class="details-item labels">
                                                 <div class="title">Labels</div>
-                                                <?php $labels = $issue['fields']['labels'];
-                                                if($labels) :?>
-                                                    <div class="label-list item-info">
-                                                        <?php foreach ($labels as $label) :?>
-                                                            <span class="label-item"><?= $label ?></span>
-                                                        <?php endforeach;?>
-                                                    </div>
-                                                <?php endif;?>
+
+                                                <!-- hiển thị -->
+                                                <div class="label-view label-list item-info">
+                                                    <?php if (!empty($issue['fields']['labels'])): ?>
+                                                        <?php foreach ($issue['fields']['labels'] as $label): ?>
+                                                            <span class="label-item"><?= htmlspecialchars($label) ?></span>
+                                                        <?php endforeach; ?>
+                                                    <?php else: ?>
+                                                        <span class="empty">none</span>
+                                                    <?php endif; ?>
+                                                </div>
+
+                                                <!-- select (ẩn) -->
+                                                <div class="label-edit" style="display:none;">
+                                                    <select
+                                                            class="allLabelsSelect"
+                                                            data-issue-key="<?= $issue['key'] ?>"
+                                                            multiple
+                                                    >
+                                                        <?php foreach ($allLabels as $label): ?>
+                                                            <option
+                                                                    value="<?= htmlspecialchars($label) ?>"
+                                                                <?= in_array($label, $issue['fields']['labels']) ? 'selected' : '' ?>
+                                                            >
+                                                                <?= htmlspecialchars($label) ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
                                             </div>
+
+
                                             <div class="due-date details-item">
                                                 <div class="title">due date</div>
 
@@ -636,6 +731,27 @@ foreach ($issues as $issue) {
         </div>
     </div>
 </div>
+
+<script>
+
+    document.querySelectorAll('.allLablesSelect').forEach(el => {
+
+        if (el.tomselect) {
+            el.tomselect.destroy();
+        }
+
+        new TomSelect(el, {
+            plugins: ['remove_button'],
+            persist: false,
+            create: true,
+            maxItems: null,
+            placeholder: "Select labels..."
+        });
+
+    });
+
+</script>
+
 
 <script>
     const editorInitialContent = {};
@@ -823,3 +939,4 @@ foreach ($issues as $issue) {
     });
 
 </script>
+

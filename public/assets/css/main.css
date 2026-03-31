@@ -1365,6 +1365,7 @@ main:after{
     padding: 5px 0;
     top: calc(100% + 10px);
     left: 0;
+    z-index: 9;
 }
 .taskContent-popup .details .details-item .assignee-wrapper{
     width: 100%;
@@ -2312,6 +2313,87 @@ input:disabled {
     font-size: 18px;
     line-height: 1.6;
 }
+
+
+.priority-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.priority-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 200px;
+    z-index: 10;
+}
+
+.priority-option {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+}
+
+.priority-option:hover {
+    background: #f5f5f5;
+}
+
+.hidden {
+    display: none;
+}
+.priority-selected .icon,
+.priority-option .icon{
+    display: flex;
+}
+.priority-selected,
+.priority-option{
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.labels-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.labels-selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.labels-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 220px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    z-index: 10;
+    padding: 8px;
+}
+
+.label-option {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+}
+.label-edit{
+    width: 60%;
+}
+
+
+
+
+
+
+
 
 
 @media (max-width: 767px) {

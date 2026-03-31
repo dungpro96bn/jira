@@ -625,16 +625,63 @@ class TaskController
     }
 
 
-//    public function debugTransition()
-//    {
-//        $issueKey = 'JIRA2024-97';
-//
-//        $jira = new \App\Services\JiraService();
-//        $transitions = $jira->getTransitions($issueKey);
-//
-//        foreach ($transitions as $t) {
-//            echo $t['id'] . ' - ' . $t['name'] . '<br>';
-//        }
-//    }
+    public function updatePriority()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? '';
+        $priorityName = $_POST['priority'] ?? '';
+
+        if (!$issueKey || !$priorityName) {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        try {
+            $jira = new \App\Services\JiraService();
+
+            $jira->updatePriority($issueKey, $priorityName);
+
+            echo json_encode(['success' => true]);
+
+        } catch (\Throwable $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+    public function updateLabels()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? '';
+        $labels = $_POST['labels'] ?? [];
+
+        if (!$issueKey) {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        try {
+            $jira = new \App\Services\JiraService();
+
+            $jira->updateLabels($issueKey, $labels);
+
+            echo json_encode([
+                'success' => true,
+                'labels' => $labels
+            ]);
+
+        } catch (\Throwable $e) {
+
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
 }

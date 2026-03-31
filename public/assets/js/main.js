@@ -39,6 +39,7 @@ jQuery(function ($) {
             .toggleClass("active");
     });
 
+
     /* ===============================
        Open create task popup
     =============================== */
@@ -472,6 +473,233 @@ jQuery(function ($) {
     $body.on('click', '.more-list', function (e) {
         e.stopPropagation();
     });
+
+
+    $(document).on('click', '.priority-selected', function (e) {
+        e.stopPropagation();
+
+        let dropdown = $(this).next('.priority-dropdown');
+
+        $('.priority-dropdown').not(dropdown).addClass('hidden');
+        dropdown.toggleClass('hidden');
+    });
+
+    $(document).on('click', '.priority-option', function () {
+
+        debugger;
+        let wrapper = $(this).closest('.priority-wrapper');
+        let issueKey = $(this).closest('.right-taskInfo').data('issue-key');
+
+        let name = $(this).data('name');
+        let img = $(this).find('img').attr('src');
+
+        // 👉 call API
+        $.ajax({
+            url: '/api/task/priority',
+            method: 'POST',
+            data: {
+                issueKey: issueKey,
+                priority: name
+            },
+            success: function (res) {
+                $('.icon-priority[data-issue-key="'+issueKey+'"] img').attr("src", img);
+            }
+        });
+
+        // update UI
+        wrapper.find('.priority-selected .priority-name').text(name);
+        wrapper.find('.priority-selected .icon img').attr('src', img);
+
+        // close dropdown
+        wrapper.find('.priority-dropdown').addClass('hidden');
+    });
+
+    $(document).on('click', function () {
+        $('.priority-dropdown').addClass('hidden');
+    });
+
+
+    // document.querySelectorAll('.details-item.labels').forEach(wrapper => {
+    //
+    //     const view = wrapper.querySelector('.label-view');
+    //     const edit = wrapper.querySelector('.label-edit');
+    //     const select = wrapper.querySelector('.allLabelsSelect');
+    //
+    //     if (!select) return;
+    //
+    //     //init TomSelect
+    //     if (select.tomselect) {
+    //         select.tomselect.destroy();
+    //     }
+    //
+    //     const ts = new TomSelect(select, {
+    //         plugins: ['remove_button'],
+    //         persist: false,
+    //         create: true,
+    //         maxItems: null,
+    //         placeholder: "Select labels..."
+    //     });
+    //
+    //     // =========================
+    //     // CLICK → SHOW SELECT
+    //     // =========================
+    //     view.addEventListener('click', () => {
+    //         view.style.display = 'none';
+    //         edit.style.display = 'flex';
+    //
+    //         ts.focus();
+    //     });
+    //
+    //     // =========================
+    //     // CHANGE → UPDATE API
+    //     // =========================
+    //     select.addEventListener('change', function () {
+    //
+    //         const issueKey = this.dataset.issueKey;
+    //         const labels = ts.getValue(); // array
+    //
+    //         console.log('Update labels:', labels);
+    //
+    //         $.ajax({
+    //             url: '/api/task/update-labels',
+    //             method: 'POST',
+    //             data: {
+    //                 issueKey: issueKey,
+    //                 labels: labels
+    //             },
+    //             success: function (res) {
+    //
+    //                 if (!res.success) {
+    //                     console.error(res.error);
+    //                     return;
+    //                 }
+    //
+    //                 // render lại labels
+    //                 renderLabels(view, labels);
+    //
+    //                 view.style.display = 'block';
+    //                 edit.style.display = 'none';
+    //             }
+    //         });
+    //     });
+    //
+    // });
+    //
+    //
+    // function renderLabels(container, labels) {
+    //
+    //     if (!labels.length) {
+    //         container.innerHTML = '<span class="empty">none</span>';
+    //         return;
+    //     }
+    //
+    //     let html = '';
+    //
+    //     labels.forEach(label => {
+    //         html += `<span class="label-item">${label}</span>`;
+    //     });
+    //
+    //     container.innerHTML = html;
+    // }
+
+
+    const observer = new MutationObserver(() => {
+
+        document.querySelectorAll('.allLabelsSelect').forEach(select => {
+
+            // nếu đã init rồi thì bỏ qua
+            if (select.tomselect) return;
+
+            new TomSelect(select, {
+                plugins: ['remove_button'],
+                persist: false,
+                create: true,
+                maxItems: null,
+                placeholder: "Select labels..."
+            });
+
+        });
+
+    });
+
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+    document.addEventListener('click', function (e) {
+
+        const view = e.target.closest('.label-view');
+
+        if (!view) return;
+
+        const wrapper = view.closest('.details-item.labels');
+        const edit = wrapper.querySelector('.label-edit');
+        const select = wrapper.querySelector('.allLabelsSelect');
+
+        if (!select || !select.tomselect) return;
+
+        view.style.display = 'none';
+        edit.style.display = 'flex';
+
+        select.tomselect.focus();
+    });
+
+    document.addEventListener('change', function (e) {
+
+        if (!e.target.classList.contains('allLabelsSelect')) return;
+
+        const select = e.target;
+        const wrapper = select.closest('.details-item.labels');
+        const view = wrapper.querySelector('.label-view');
+
+        const issueKey = select.dataset.issueKey;
+        const labels = select.tomselect.getValue();
+
+        $.ajax({
+            url: '/api/task/update-labels',
+            method: 'POST',
+            data: {
+                issueKey: issueKey,
+                labels: labels
+            },
+            success: function (res) {
+
+                if (!res.success) {
+                    console.error(res.error);
+                    return;
+                }
+
+                renderLabels(view, labels);
+
+                view.style.display = 'flex';
+                wrapper.querySelector('.label-edit').style.display = 'none';
+
+                const labelView = $(view).html();
+
+                $('.label-list[data-issue-key="'+issueKey+'"]').html(labelView);
+
+            }
+        });
+
+    });
+
+    function renderLabels(container, labels) {
+
+        if (!labels.length) {
+            container.innerHTML = '<span class="empty">none</span>';
+            return;
+        }
+
+        let html = '';
+
+        labels.forEach(label => {
+            html += `<span class="label-item">${label}</span>`;
+        });
+
+        container.innerHTML = html;
+    }
 
 
 });

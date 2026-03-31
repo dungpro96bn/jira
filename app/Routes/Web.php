@@ -250,6 +250,19 @@ class Web
                 (new TaskController())->delete();
                 break;
 
+            case '/api/task/priority':
+                AuthMiddleware::checkAccess();
+                if ($method === 'POST') {
+                    (new TaskController())->updatePriority();
+                }
+                break;
+
+            case '/api/task/update-labels':
+                AuthMiddleware::checkAccess();
+                if ($method === 'POST') {
+                    (new TaskController())->updateLabels();
+                }
+                break;
 
 
 
