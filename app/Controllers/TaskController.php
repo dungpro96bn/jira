@@ -176,6 +176,7 @@ class TaskController
     public function detail()
     {
         $users = $this->jiraService->getAssignableUsers();
+        $allLabels = $this->jiraService->getAllLabels();
 
         $id = $_GET['id'] ?? null;
 

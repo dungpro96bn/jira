@@ -179,15 +179,37 @@ $issueId = $task['id'];
 
         <div class="details-item labels">
             <div class="title">Labels</div>
-            <?php $labels = $task['fields']['labels'];
-            if($labels) :?>
-                <div class="label-list item-info">
-                    <?php foreach ($labels as $label) :?>
-                        <span class="label-item"><?= $label ?></span>
-                    <?php endforeach;?>
-                </div>
-            <?php endif;?>
+
+            <!-- hiển thị -->
+            <div class="label-view label-list item-info">
+                <?php if (!empty($task['fields']['labels'])): ?>
+                    <?php foreach ($task['fields']['labels'] as $label): ?>
+                        <span class="label-item"><?= htmlspecialchars($label) ?></span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <span class="empty">none</span>
+                <?php endif; ?>
+            </div>
+
+            <div class="label-edit" style="display:none;">
+                <select
+                        class="allLabelsSelect"
+                        data-issue-key="<?= $task['key'] ?>"
+                        multiple
+                >
+                    <?php foreach ($allLabels as $label): ?>
+                    <?php var_dump($allLabels); ?>
+                        <option
+                                value="<?= htmlspecialchars($label) ?>"
+                            <?= in_array($label, $task['fields']['labels']) ? 'selected' : '' ?>
+                        >
+                            <?= htmlspecialchars($label) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
+
         <div class="due-date details-item">
             <div class="title">due date</div>
             <?php if (isset($task['fields']['duedate'])): ?>

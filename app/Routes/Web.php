@@ -100,6 +100,34 @@ class Web
                 }
                 break;
 
+
+            case '/dashboard':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->dashboard();
+                }
+                break;
+
+            case '/api/dashboard':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->getDashboardData();
+                }
+                break;
+
+            case '/api/dashboard/clear':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new SummaryController())->clearCache();
+                }
+                break;
+
             case '/summary':
                 AuthMiddleware::check();
                 \App\Helpers\Role::check(['admin']);

@@ -15,7 +15,7 @@ class UserController
     {
         $this->authService = new AuthService();
 
-        $db = require __DIR__ . '/../config/database.php';
+        $db = require __DIR__ . '/../Config/database.php';
         $this->userModel = new UserModel($db);
     }
 

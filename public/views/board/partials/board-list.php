@@ -115,14 +115,13 @@ foreach ($issues as $issue) {
                                     <?= htmlspecialchars($issue['fields']['summary']) ?>
                                 </h4>
 
-                                <?php $labels = $issue['fields']['labels'];
-                                if($labels) :?>
+                                <?php $labels = $issue['fields']['labels']; ?>
                                 <div class="label-list" data-issue-key="<?= $issue['key'] ?>">
                                     <?php foreach ($labels as $label) :?>
                                         <span class="label-item"><?= $label ?></span>
                                     <?php endforeach;?>
                                 </div>
-                                <?php endif;?>
+
 
                                 <?php if (isset($issue['fields']['duedate'])): ?>
                                     <?php

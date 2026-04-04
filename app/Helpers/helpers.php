@@ -31,6 +31,8 @@ function title_page(){
         echo "Add New User";
     } elseif ($path == '/summary'){
         echo "Summary";
+    } elseif ($path == '/dashboard'){
+        echo "Dashboard";
     }
 
 }

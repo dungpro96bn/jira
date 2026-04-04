@@ -1,16 +1,38 @@
 <?php require __DIR__ . '/../layouts/header.php'; ?>
 
-    <main id="board">
-        <div class="board-inner">
-            <div class="boardContent">
-                <div id="board-list" class="board-list">
+    <div class="app dashboard-app-shell">
+    <?php require __DIR__ . '/../layouts/sidebar.php'; ?>
 
+    <main class="dashboard-main dashboard-board-page">
+        <section class="dashboard-topbar">
+            <div class="dashboard-heading-block">
+                <h2>Board</h2>
+            </div>
+            <div class="dashboard-topbar-actions">
+                <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+                <a href="/dashboard" class="dashboard-button">Dashboard</a>
+                <?php endif; ?>
+                <a href="/create-task" class="dashboard-button dashboard-button-primary">+ Create Task</a>
+            </div>
+        </section>
+
+        <section class="panel board-dashboard-panel">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-title">Kanban Board</h3>
+                    <p class="panel-subtitle">Drag and drop tasks between columns, then open details without leaving the page.</p>
                 </div>
             </div>
-        </div>
+            <div class="panel-body board-dashboard-body">
+                <div class="board-shell">
+                    <div id="board-list" class="board-list"></div>
+                </div>
+            </div>
+        </section>
     </main>
+</div>
 
-    <script>
+<script>
 
         /* ===============================
         Auto open popup if URL has selectedIssue

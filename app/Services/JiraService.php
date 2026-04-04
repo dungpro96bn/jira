@@ -477,7 +477,7 @@ class JiraService
             $response = $this->client->get('/rest/api/3/search/jql', [
                 'query' => [
                     'jql' => 'project = "' . $this->projectKey . '"',
-                    'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment,labels,issuetype',
+                    'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment,labels,issuetype,created',
                     'maxResults' => 1000
                 ]
             ]);

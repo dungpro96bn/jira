@@ -1,4 +1,6 @@
-<div class="checkLoad"></div>
+<div class="checkLoad">
+    <img src="../../assets/images/loader-1.gif" alt="Loading">
+</div>
 
 <div class="alert">
     <div class="alert-container">

@@ -6,16 +6,16 @@ class AuthMiddleware
 {
     public static function check()
     {
-        if (!isset($_SESSION['user'])) {
-            header("Location: /login");
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
+            header('Location: /login');
             exit;
         }
     }
 
     public static function checkAccess()
     {
-        if (!isset($_SESSION['user'])) {
-            header("Location: /login");
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
+            header('Location: /login');
             exit;
         }
 
