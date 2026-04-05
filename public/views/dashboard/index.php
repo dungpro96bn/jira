@@ -11,8 +11,8 @@
             </div>
             <div class="dashboard-topbar-actions">
                 <button type="button" class="dashboard-button" id="dashboardClearCache">Clear Cache</button>
-                <a href="/board" class="dashboard-button">Open Tasks</a>
-                <a href="/create-task" class="dashboard-button dashboard-button-primary">+ Create Task</a>
+                <a href="/board" class="dashboard-button dashboard-button-dark">Open Tasks</a>
+                <a href="/create-task" class="dashboard-button dashboard-button-primary"><i class="fa-solid fa-plus"></i>Create Task</a>
             </div>
         </section>
 
@@ -165,7 +165,7 @@
                 <div class="panel-body">
                     <div class="dashboard-actions-grid">
                         <a class="quick-action-card" href="/create-task">
-                            <span class="quick-action-card__icon">+</span>
+                            <span class="quick-action-card__icon"><i class="fa-solid fa-plus"></i></span>
                             <div>
                                 <strong>Create Task</strong>
                                 <p>Open your create task popup or page.</p>
@@ -179,14 +179,14 @@
                             </div>
                         </a>
                         <a class="quick-action-card" href="/users">
-                            <span class="quick-action-card__icon">👤</span>
+                            <span class="quick-action-card__icon"><i class="fa-solid fa-user"></i></span>
                             <div>
                                 <strong>Manage Users</strong>
                                 <p>Review team roles and approvals.</p>
                             </div>
                         </a>
                         <button type="button" class="quick-action-card quick-action-card--button" id="dashboardRefreshSecondary">
-                            <span class="quick-action-card__icon">↻</span>
+                            <span class="quick-action-card__icon"><i class="fa-solid fa-arrows-rotate"></i></span>
                             <div>
                                 <strong>Refresh Dashboard</strong>
                                 <p>Reload the latest Jira statistics.</p>

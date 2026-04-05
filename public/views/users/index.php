@@ -12,7 +12,7 @@
                 <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
                 <a href="/dashboard" class="dashboard-button">Back to Dashboard</a>
                 <?php endif; ?>
-                <a href="/user-new" class="dashboard-button dashboard-button-primary">+ Add New User</a>
+                <a href="/user-new" class="dashboard-button dashboard-button-primary"><i class="fa-solid fa-plus"></i>Add New User</a>
             </div>
         </section>
 

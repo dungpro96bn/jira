@@ -18,7 +18,8 @@ class BoardController
     {
         $jira = new \App\Services\JiraService();
 
-        $issues = $jira->getAllIssues();
+        $issues = $jira->getBoardTasks();
+        $users = $jira->getAssignableUsers();
 
         $allLabels = [];
 
@@ -35,6 +36,7 @@ class BoardController
         // đảm bảo biến tồn tại trong view
         extract([
             'issues' => $issues,
+            'users' => $users,
             'allLabels' => $allLabels
         ]);
 

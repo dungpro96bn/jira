@@ -20,19 +20,23 @@ function title_page(){
     } elseif ($path == '/login'){
         echo "Login";
     } elseif ($path == '/board'){
-        echo "Board";
+        echo "Tasks";
     } elseif ($path == '/register'){
         echo "Register";
     } elseif ($path == '/create-task'){
         echo "Create Task";
     } elseif ($path == '/users'){
-        echo "Users";
+        echo "All Users";
     } elseif ($path == '/user-new'){
         echo "Add New User";
     } elseif ($path == '/summary'){
         echo "Summary";
     } elseif ($path == '/dashboard'){
         echo "Dashboard";
+    } elseif ($path == '/attachments'){
+        echo "Attachments";
+    } elseif ($path == '/archived-work-items'){
+        echo "Archived Work Items";
     }
 
 }

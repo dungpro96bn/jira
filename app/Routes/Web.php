@@ -7,6 +7,7 @@ use App\Controllers\TaskController;
 use App\Middleware\AuthMiddleware;
 use App\Controllers\UserController;
 use App\Controllers\SummaryController;
+use App\Controllers\ArchivedWorkItemController;
 
 class Web
 {
@@ -128,6 +129,25 @@ class Web
                 }
                 break;
 
+
+            case '/archived-work-items':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new ArchivedWorkItemController())->index();
+                }
+                break;
+
+            case '/api/archived-work-items':
+                AuthMiddleware::check();
+                \App\Helpers\Role::check(['admin']);
+
+                if ($method === 'GET') {
+                    (new ArchivedWorkItemController())->list();
+                }
+                break;
+
             case '/summary':
                 AuthMiddleware::check();
                 \App\Helpers\Role::check(['admin']);
@@ -241,11 +261,58 @@ class Web
                 }
                 break;
 
+            case '/task/add-worklog':
+                AuthMiddleware::checkAccess();
+
+                if ($method === 'POST') {
+                    (new TaskController())->addWorklog();
+                }
+                break;
+
+            case '/task/add-comment':
+                AuthMiddleware::checkAccess();
+
+                if ($method === 'POST') {
+                    (new TaskController())->addComment();
+                }
+                break;
+
+            case '/task/create-subtask':
+                AuthMiddleware::checkAccess();
+
+                if ($method === 'POST') {
+                    (new TaskController())->createSubtask();
+                }
+                break;
+
             case '/task/upload-image':
                 AuthMiddleware::checkAccess();
 
                 if ($method === 'POST') {
                     (new TaskController())->uploadImage();
+                }
+                break;
+
+
+
+            case '/attachments':
+                AuthMiddleware::checkAccess();
+                if ($method === 'GET') {
+                    (new \App\Controllers\AttachmentController())->index();
+                }
+                break;
+
+            case '/api/attachments':
+                AuthMiddleware::checkAccess();
+                if ($method === 'GET') {
+                    (new \App\Controllers\AttachmentController())->list();
+                }
+                break;
+
+            case '/api/attachments/delete':
+                AuthMiddleware::checkAccess();
+                if ($method === 'POST') {
+                    (new \App\Controllers\AttachmentController())->delete();
                 }
                 break;
 

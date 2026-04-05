@@ -28,6 +28,11 @@ jQuery(function ($) {
         $(".form-createTask .user-list").removeClass("is-open");
     });
 
+    $(document).on('click', '#btnMenu', function () {
+        $(this).toggleClass('active');
+        $(this).closest(".menu-mobile").toggleClass('active');
+        $('.dashboard-sidebar').toggleClass('is-open');
+    });
 
     /* ===============================
        Task child toggle
@@ -75,25 +80,15 @@ jQuery(function ($) {
     }
 
     /* ===============================
-       Open task popup
+       Close task popup
     =============================== */
-    $body.on("click", ".open-task", function (e) {
-        e.preventDefault();
-
-        const target = $(this).attr("href").replace("#", "");
-        const issueKey = $(this).data("issue-key");
-
-        $("#" + target).addClass("is-open");
-
-        updateUrlParam("selectedIssue", issueKey);
-    });
-
     $body.on("click", ".taskContent-popup .close-popup", function () {
         $(".taskContent-popup").removeClass("is-open");
+        $("#task-popup-content").html("");
         updateUrlParam("selectedIssue");
     });
 
-    /* ===============================
+/* ===============================
        Generate password
     =============================== */
     $("#generateBtn").on("click", function () {
@@ -700,6 +695,316 @@ jQuery(function ($) {
 
         container.innerHTML = html;
     }
+
+
+
+    /* ===============================
+       Time tracking modal
+    =============================== */
+    $body.on("click", ".open-time-tracking", function () {
+        $(this).closest('.taskContent-popup').find('.time-tracking-modal').addClass('is-open');
+    });
+
+    $body.on("click", ".time-tracking-close, .time-tracking-cancel", function () {
+        $(this).closest('.time-tracking-modal').removeClass('is-open');
+    });
+
+    $body.on("click", ".time-tracking-modal", function (e) {
+        if ($(e.target).is('.time-tracking-modal')) {
+            $(this).removeClass('is-open');
+        }
+    });
+
+    $body.on("submit", ".time-tracking-form", function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+        const $popup = $form.closest('.taskContent-popup');
+        const issueKey = $popup.find('.right-taskInfo').data('issue-key');
+        const taskId = $popup.find('.right-taskInfo').data('task-id');
+
+        const payload = {
+            issueKey: issueKey,
+            timeSpent: $.trim($form.find('[name="timeSpent"]').val()),
+            remainingEstimate: $.trim($form.find('[name="remainingEstimate"]').val()),
+            comment: $.trim($form.find('[name="comment"]').val())
+        };
+
+        if (!payload.timeSpent) {
+            alert('Please enter time spent.');
+            return;
+        }
+
+        const $submit = $form.find('.time-tracking-save');
+        const originalText = $submit.text();
+
+        $submit.prop('disabled', true).text('Saving...');
+
+        $.ajax({
+            url: '/task/add-worklog',
+            method: 'POST',
+            dataType: 'json',
+            data: payload
+        }).done(function (res) {
+            if (!res || !res.success) {
+                alert((res && res.message) ? res.message : 'Unable to log time.');
+                return;
+            }
+
+            $form[0].reset();
+            $form.closest('.time-tracking-modal').removeClass('is-open');
+
+            if (typeof window.loadTaskPopupById === 'function' && taskId && issueKey) {
+                window.loadTaskPopupById(taskId, issueKey, true);
+            }
+        }).fail(function (xhr) {
+            let message = 'Unable to log time.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            alert(message);
+        }).always(function () {
+            $submit.prop('disabled', false).text(originalText);
+        });
+    });
+
+
+    /* ===============================
+       Task popup activity + subtasks
+    =============================== */
+    $body.on('click', '.activity-tab', function () {
+        const pane = $(this).data('pane');
+        const $block = $(this).closest('.activity-block');
+
+        $block.find('.activity-tab').removeClass('is-active');
+        $(this).addClass('is-active');
+        $block.find('.activity-pane').removeClass('is-active');
+        $block.find('.activity-pane[data-pane="' + pane + '"]').addClass('is-active');
+    });
+
+    $body.on('click', '.toggle-subtask-form', function () {
+        $(this).closest('.subtasks-block').find('.subtask-create-form').removeClass('hidden');
+    });
+
+    $body.on('click', '.subtask-cancel', function () {
+        const $form = $(this).closest('.subtask-create-form');
+        $form.addClass('hidden');
+        $form[0].reset();
+    });
+
+    $body.on('submit', '.subtask-create-form', function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+        const parentKey = $form.data('parent-key');
+        const summary = $.trim($form.find('[name="summary"]').val());
+        const $popup = $form.closest('.taskContent-popup');
+        const taskId = $popup.find('.right-taskInfo').data('task-id');
+        const issueKey = $popup.find('.right-taskInfo').data('issue-key');
+
+        if (!summary) {
+            alert('Please enter subtask summary.');
+            return;
+        }
+
+        const $submit = $form.find('.subtask-submit');
+        const originalText = $submit.text();
+        $submit.prop('disabled', true).text('Creating...');
+
+        $.ajax({
+            url: '/task/create-subtask',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                parentKey: parentKey,
+                summary: summary
+            }
+        }).done(function (res) {
+            if (!res || !res.success) {
+                alert((res && res.message) ? res.message : 'Unable to create subtask.');
+                return;
+            }
+
+            $form[0].reset();
+            $form.addClass('hidden');
+
+            if (typeof window.loadTaskPopupById === 'function' && taskId && issueKey) {
+                window.loadTaskPopupById(taskId, issueKey, true);
+            }
+        }).fail(function (xhr) {
+            let message = 'Unable to create subtask.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            alert(message);
+        }).always(function () {
+            $submit.prop('disabled', false).text(originalText);
+        });
+    });
+
+    $body.on('submit', '.task-comment-form', function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+        const issueKey = $form.data('issue-key');
+        const $popup = $form.closest('.taskContent-popup');
+        const taskId = $popup.find('.right-taskInfo').data('task-id');
+        const currentIssueKey = $popup.find('.right-taskInfo').data('issue-key');
+        const comment = $.trim($form.find('[name="comment"]').val());
+
+        if (!comment) {
+            alert('Please enter comment.');
+            return;
+        }
+
+        const $submit = $form.find('button[type="submit"]');
+        const originalText = $submit.text();
+        $submit.prop('disabled', true).text('Posting...');
+
+        $.ajax({
+            url: '/task/add-comment',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                issueKey: issueKey,
+                comment: comment
+            }
+        }).done(function (res) {
+            if (!res || !res.success) {
+                alert((res && res.message) ? res.message : 'Unable to add comment.');
+                return;
+            }
+
+            $form[0].reset();
+
+            if (typeof window.loadTaskPopupById === 'function' && taskId && currentIssueKey) {
+                window.loadTaskPopupById(taskId, currentIssueKey, true);
+            }
+        }).fail(function (xhr) {
+            let message = 'Unable to add comment.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                message = xhr.responseJSON.message;
+            }
+            alert(message);
+        }).always(function () {
+            $submit.prop('disabled', false).text(originalText);
+        });
+    });
+
+
+
+
+    /* ===============================
+       Popup status transitions
+    =============================== */
+    function popupEscapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, function (m) {
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'})[m];
+        });
+    }
+
+    function loadPopupTransitions($trigger) {
+        const issueKey = $trigger.data('issue-key');
+        const $menu = $trigger.siblings('.popup-status-menu');
+
+        if (!issueKey || !$menu.length) {
+            return;
+        }
+
+        if ($menu.data('loaded') === 1) {
+            return;
+        }
+
+        $menu.html('<div class="popup-status-loading">Loading workflow...</div>');
+
+        $.get('/api/board/get-transitions', { issueKey: issueKey }, function (res) {
+            const transitions = (res && res.transitions) ? res.transitions : [];
+            let html = '';
+
+            if (!transitions.length) {
+                html = '<div class="popup-status-empty">No available transitions</div>';
+            } else {
+                transitions.forEach(function (transition) {
+                    const name = transition.name || 'Transition';
+                    const toName = transition.to && transition.to.name ? transition.to.name : name;
+                    html += '<button type="button" class="popup-transition-option" data-transition-id="' + popupEscapeHtml(transition.id) + '" data-to-name="' + popupEscapeHtml(toName) + '">';
+                    html += '<span class="popup-transition-name">' + popupEscapeHtml(name) + '</span>';
+                    html += '<span class="popup-transition-arrow">→</span>';
+                    html += '<span class="popup-transition-target">' + popupEscapeHtml(toName) + '</span>';
+                    html += '</button>';
+                });
+            }
+
+            $menu.html(html).data('loaded', 1);
+        }, 'json').fail(function () {
+            $menu.html('<div class="popup-status-empty">Unable to load transitions</div>');
+        });
+    }
+
+    $body.on('click', '.popup-status-trigger', function (e) {
+        e.stopPropagation();
+        const $trigger = $(this);
+        const $wrapper = $trigger.closest('.popup-status-wrapper');
+        $('.popup-status-wrapper').not($wrapper).removeClass('is-open').find('.popup-status-menu').addClass('hidden');
+        $wrapper.toggleClass('is-open');
+        $wrapper.find('.popup-status-menu').toggleClass('hidden');
+        if ($wrapper.hasClass('is-open')) {
+            loadPopupTransitions($trigger);
+        }
+    });
+
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.popup-status-wrapper').length) {
+            $('.popup-status-wrapper').removeClass('is-open').find('.popup-status-menu').addClass('hidden');
+        }
+    });
+
+    $body.on('click', '.popup-transition-option', function (e) {
+        e.stopPropagation();
+        const $option = $(this);
+        const $wrapper = $option.closest('.popup-status-wrapper');
+        const $trigger = $wrapper.find('.popup-status-trigger');
+        const issueKey = $trigger.data('issue-key');
+        const taskId = $trigger.data('task-id');
+        const transitionId = $option.data('transition-id');
+        const toName = $option.data('to-name');
+        const $popup = $trigger.closest('.taskContent-popup');
+        const currentIssueKey = $popup.find('.right-taskInfo').data('issue-key');
+        const currentTaskId = $popup.find('.right-taskInfo').data('task-id');
+
+        if (!issueKey || !transitionId) {
+            return;
+        }
+
+        $option.prop('disabled', true);
+
+        $.post('/api/board/move', { issueKey: issueKey, transitionId: transitionId }, function (res) {
+            if (!res || !res.success) {
+                alert('Unable to update status.');
+                $option.prop('disabled', false);
+                return;
+            }
+
+            $trigger.find('.popup-status-label').text(toName);
+            $wrapper.removeClass('is-open').find('.popup-status-menu').addClass('hidden');
+            if (typeof window.loadBoard === 'function') {
+                window.loadBoard();
+            }
+            if (typeof window.loadTaskPopupById === 'function' && currentTaskId && currentIssueKey) {
+                window.loadTaskPopupById(currentTaskId, currentIssueKey, true);
+            }
+        }, 'json').fail(function () {
+            alert('Unable to update status.');
+            $option.prop('disabled', false);
+        });
+    });
+
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.details-item.labels').length) {
+            $('.details-item.labels .label-edit').hide();
+            $('.details-item.labels .label-view').show();
+        }
+    });
 
 
 });

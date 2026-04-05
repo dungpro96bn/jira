@@ -207,3 +207,17 @@
     text-align: right;
     font-size: 14px;
 }
+
+
+
+@media (max-width: 767px) {
+
+    .summary-box{
+        gap: 40px;
+    }
+    #dashboardTypesList .dashboard-list-item__main{
+        width: 90px;
+    }
+
+}
+

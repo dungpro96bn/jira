@@ -66,11 +66,11 @@ class AuthService
             ];
         }
 
-        //CHECK PASSWORD >= 6
-        if (strlen($password) < 10) {
+        //CHECK PASSWORD >= 8
+        if (strlen($password) < 8) {
             return [
                 'success' => false,
-                'message' => 'Password must be at least 10 characters'
+                'message' => 'Password must be at least 8 characters'
             ];
         }
 
@@ -113,10 +113,10 @@ class AuthService
             ];
         }
 
-        if (strlen($password) < 10) {
+        if (strlen($password) < 8) {
             return [
                 'success' => false,
-                'message' => 'Password must be at least 10 characters'
+                'message' => 'Password must be at least 8 characters'
             ];
         }
 

@@ -187,9 +187,128 @@ class TaskController
 
         $jira = new \App\Services\JiraService();
 
-        $task = $jira->getTaskById($id); // bạn cần có hàm này
+        $task = $jira->getTaskById($id);
+
+        if (!empty($task['fields']['subtasks'])) {
+            $subtaskKeys = [];
+            foreach ($task['fields']['subtasks'] as $subtask) {
+                if (!empty($subtask['key'])) {
+                    $subtaskKeys[] = $subtask['key'];
+                }
+            }
+
+            if (!empty($subtaskKeys)) {
+                $subtaskDetails = $jira->getIssuesByKeys($subtaskKeys);
+                $subtaskMap = [];
+
+                foreach ($subtaskDetails as $subtaskDetail) {
+                    if (!empty($subtaskDetail['key'])) {
+                        $subtaskMap[$subtaskDetail['key']] = $subtaskDetail;
+                    }
+                }
+
+                foreach ($task['fields']['subtasks'] as $index => $subtask) {
+                    if (!empty($subtask['key']) && isset($subtaskMap[$subtask['key']])) {
+                        $task['fields']['subtasks'][$index] = $subtaskMap[$subtask['key']];
+                    }
+                }
+            }
+        }
 
         require dirname(__DIR__, 2) . '/public/views/task/detail.php';
+    }
+
+
+    public function addComment()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? '';
+        $comment = trim($_POST['comment'] ?? '');
+
+        if (!$issueKey || $comment === '') {
+            http_response_code(422);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Issue key and comment are required.'
+            ]);
+            return;
+        }
+
+        $result = $this->jiraService->addComment($issueKey, $comment);
+
+        if (!empty($result['success'])) {
+            echo json_encode($result);
+            return;
+        }
+
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => $result['message'] ?? 'Unable to add comment.'
+        ]);
+    }
+
+    public function createSubtask()
+    {
+        header('Content-Type: application/json');
+
+        $parentKey = $_POST['parentKey'] ?? '';
+        $summary = trim($_POST['summary'] ?? '');
+
+        if (!$parentKey || $summary === '') {
+            http_response_code(422);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Parent issue key and summary are required.'
+            ]);
+            return;
+        }
+
+        $result = $this->jiraService->createSubtask($parentKey, $summary);
+
+        if (!empty($result['success'])) {
+            echo json_encode($result);
+            return;
+        }
+
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => $result['message'] ?? 'Unable to create subtask.'
+        ]);
+    }
+
+    public function addWorklog()
+    {
+        header('Content-Type: application/json');
+
+        $issueKey = $_POST['issueKey'] ?? '';
+        $timeSpent = trim($_POST['timeSpent'] ?? '');
+        $remainingEstimate = trim($_POST['remainingEstimate'] ?? '');
+        $comment = trim($_POST['comment'] ?? '');
+
+        if (!$issueKey || !$timeSpent) {
+            http_response_code(422);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Issue key and time spent are required.'
+            ]);
+            return;
+        }
+
+        $result = $this->jiraService->addWorklog($issueKey, $timeSpent, $remainingEstimate, $comment);
+
+        if (!empty($result['success'])) {
+            echo json_encode($result);
+            return;
+        }
+
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => $result['message'] ?? 'Unable to log time.'
+        ]);
     }
 
     public function updateDescription()
@@ -618,7 +737,12 @@ class TaskController
         }
 
         $jira = new \App\Services\JiraService();
-        $result = $jira->deleteTask($issueKey);
+        $archivedBy = [
+            'name' => $_SESSION['user']['name'] ?? ($_SESSION['user']['username'] ?? 'Unknown'),
+            'avatar' => $_SESSION['user']['avatar'] ?? '',
+            'email' => $_SESSION['user']['email'] ?? '',
+        ];
+        $result = $jira->deleteTask($issueKey, $archivedBy);
 
         echo json_encode([
             'success' => !isset($result['error'])

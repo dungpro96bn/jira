@@ -220,7 +220,7 @@ class JiraService
         $response = $this->client->get('/rest/api/3/search/jql', [
             'query' => [
                 'jql' => "project = {$this->projectKey} ORDER BY Rank ASC",
-                'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment,labels',
+                'fields' => 'summary,status,assignee,duedate,priority,parent,description,attachment,labels,created',
                 'maxResults' => 100
             ]
         ]);
@@ -249,21 +249,104 @@ class JiraService
 
     public function getTaskById($id)
     {
-        $url = "https://dev-scvweb.atlassian.net/rest/api/3/issue/" . $id;
+        try {
+            $response = $this->client->get("/rest/api/3/issue/{$id}", [
+                'query' => [
+                    'fields' => 'summary,status,assignee,reporter,duedate,priority,description,attachment,labels,subtasks,timetracking,comment,worklog,parent,created,updated',
+                    'expand' => 'changelog'
+                ]
+            ]);
 
-        $ch = curl_init($url);
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_USERPWD, $this->email . ":" . $this->apiToken);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            "Accept: application/json"
-        ]);
 
-        $response = curl_exec($ch);
+    public function getIssuesByKeys($keys)
+    {
+        $keys = array_values(array_filter(array_unique((array)$keys)));
 
-        curl_close($ch);
+        if (empty($keys)) {
+            return [];
+        }
 
-        return json_decode($response, true);
+        $quoted = array_map(function ($key) {
+            return '"' . str_replace('"', '\\"', $key) . '"';
+        }, $keys);
+
+        try {
+            $response = $this->client->get('/rest/api/3/search/jql', [
+                'query' => [
+                    'jql' => 'key in (' . implode(',', $quoted) . ')',
+                    'fields' => 'summary,status,assignee,priority,issuetype,parent',
+                    'maxResults' => count($keys)
+                ]
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+            return $data['issues'] ?? [];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function createSubtask($parentKey, $summary)
+    {
+        try {
+            $response = $this->client->post('/rest/api/3/issue', [
+                'json' => [
+                    'fields' => [
+                        'project' => ['key' => $this->projectKey],
+                        'parent' => ['key' => $parentKey],
+                        'summary' => $summary,
+                        'issuetype' => ['name' => 'Sub-task']
+                    ]
+                ]
+            ]);
+
+            return [
+                'success' => true,
+                'data' => json_decode($response->getBody(), true)
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function addComment($issueKey, $comment)
+    {
+        try {
+            $response = $this->client->post("/rest/api/3/issue/{$issueKey}/comment", [
+                'json' => [
+                    'body' => [
+                        'type' => 'doc',
+                        'version' => 1,
+                        'content' => [[
+                            'type' => 'paragraph',
+                            'content' => [[
+                                'type' => 'text',
+                                'text' => $comment
+                            ]]
+                        ]]
+                    ]
+                ]
+            ]);
+
+            return [
+                'success' => true,
+                'data' => json_decode($response->getBody(), true)
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
     }
 
     public function getTransitions($issueKey)
@@ -297,6 +380,144 @@ class JiraService
             error_log($e->getMessage());
             return false;
         }
+    }
+
+
+    public function addWorklog($issueKey, $timeSpent, $remainingEstimate = '', $comment = '')
+    {
+        try {
+            $payload = [
+                'timeSpent' => $timeSpent,
+            ];
+
+            if ($comment !== '') {
+                $payload['comment'] = [
+                    'type' => 'doc',
+                    'version' => 1,
+                    'content' => [[
+                        'type' => 'paragraph',
+                        'content' => [[
+                            'type' => 'text',
+                            'text' => $comment
+                        ]]
+                    ]]
+                ];
+            }
+
+            $query = [
+                'adjustEstimate' => $remainingEstimate !== '' ? 'new' : 'auto',
+            ];
+
+            if ($remainingEstimate !== '') {
+                $query['newEstimate'] = $remainingEstimate;
+            }
+
+            $response = $this->client->post("/rest/api/3/issue/{$issueKey}/worklog", [
+                'query' => $query,
+                'json' => $payload
+            ]);
+
+            return [
+                'success' => true,
+                'data' => json_decode($response->getBody(), true)
+            ];
+        } catch (ClientException $e) {
+            $errorBody = $e->getResponse()->getBody()->getContents();
+
+            return [
+                'success' => false,
+                'message' => $errorBody ?: $e->getMessage()
+            ];
+        } catch (RequestException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+
+
+    public function deleteAttachment($attachmentId)
+    {
+        try {
+            $this->client->delete("/rest/api/3/attachment/{$attachmentId}");
+
+            return [
+                'success' => true,
+            ];
+        } catch (ClientException $e) {
+            $errorBody = $e->getResponse()->getBody()->getContents();
+
+            return [
+                'success' => false,
+                'message' => $errorBody ?: $e->getMessage(),
+            ];
+        } catch (RequestException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    public function getAllAttachments()
+    {
+        $issues = $this->getAllIssues();
+        $attachments = [];
+
+        foreach ($issues as $issue) {
+            $fields = isset($issue['fields']) && is_array($issue['fields']) ? $issue['fields'] : [];
+            $issueKey = isset($issue['key']) ? $issue['key'] : '';
+            $issueSummary = !empty($fields['summary']) ? $fields['summary'] : 'Untitled issue';
+            $issueAttachments = !empty($fields['attachment']) && is_array($fields['attachment']) ? $fields['attachment'] : [];
+
+            foreach ($issueAttachments as $attachment) {
+                $mime = !empty($attachment['mimeType']) ? $attachment['mimeType'] : 'application/octet-stream';
+                $filename = !empty($attachment['filename']) ? $attachment['filename'] : 'attachment';
+                $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                $thumb = '';
+
+                if (strpos($mime, 'image/') === 0) {
+                    $thumb = '/attachment-proxy?id=' . urlencode($attachment['id']) . '&name=' . rawurlencode($filename);
+                }
+
+                $attachments[] = [
+                    'id' => isset($attachment['id']) ? (string) $attachment['id'] : '',
+                    'filename' => $filename,
+                    'mimeType' => $mime,
+                    'size' => isset($attachment['size']) ? (int) $attachment['size'] : 0,
+                    'created' => !empty($attachment['created']) ? $attachment['created'] : '',
+                    'content' => !empty($attachment['content']) ? $attachment['content'] : '',
+                    'thumbnail' => !empty($attachment['thumbnail']) ? $attachment['thumbnail'] : '',
+                    'preview' => $thumb,
+                    'author' => !empty($attachment['author']['displayName']) ? $attachment['author']['displayName'] : 'Unknown',
+                    'authorAvatar' => !empty($attachment['author']['avatarUrls']['24x24']) ? $attachment['author']['avatarUrls']['48x48'] : 'Unknown',
+                    'issueKey' => $issueKey,
+                    'issueSummary' => $issueSummary,
+                    'extension' => $extension,
+                    'isImage' => strpos($mime, 'image/') === 0,
+                ];
+            }
+        }
+
+        usort($attachments, function ($a, $b) {
+            $aTime = !empty($a['created']) ? strtotime($a['created']) : 0;
+            $bTime = !empty($b['created']) ? strtotime($b['created']) : 0;
+            return $bTime <=> $aTime;
+        });
+
+        return $attachments;
     }
 
     public function updateIssue($issueId, $data)
@@ -446,21 +667,24 @@ class JiraService
         }
     }
 
-    public function deleteTask($issueKey)
+    public function deleteTask($issueKey, $archivedBy = [])
     {
         try {
-            // 1. get issue
-            $issue = $this->client->get("/rest/api/3/issue/{$issueKey}");
+            $issue = $this->client->get("/rest/api/3/issue/{$issueKey}", [
+                'query' => [
+                    'fields' => 'summary,issuetype,reporter,assignee,created,updated,subtasks'
+                ]
+            ]);
             $data = json_decode($issue->getBody(), true);
+
+            $this->saveArchivedWorkItem($data, $archivedBy);
 
             $subtasks = $data['fields']['subtasks'] ?? [];
 
-            // 2. delete subtasks
             foreach ($subtasks as $sub) {
                 $this->client->delete("/rest/api/3/issue/" . $sub['key']);
             }
 
-            // 3. delete parent
             $this->client->delete("/rest/api/3/issue/{$issueKey}");
 
             return ['success' => true];
@@ -569,6 +793,87 @@ class JiraService
                 ]
             ]
         ]);
+    }
+
+
+    private function getArchiveStorePath()
+    {
+        return __DIR__ . '/../../storage/archive-work-items.json';
+    }
+
+    private function ensureArchiveStoreDirectory()
+    {
+        $dir = dirname($this->getArchiveStorePath());
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+    }
+
+    public function getArchivedWorkItemsStore()
+    {
+        $path = $this->getArchiveStorePath();
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $json = file_get_contents($path);
+        $data = json_decode($json, true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    public function saveArchivedWorkItem($issueData, $archivedBy = [])
+    {
+        $this->ensureArchiveStoreDirectory();
+
+        $items = $this->getArchivedWorkItemsStore();
+        $issueKey = $issueData['key'] ?? null;
+
+        if (!$issueKey) {
+            return false;
+        }
+
+        $fields = $issueData['fields'] ?? [];
+        $reporter = $fields['reporter'] ?? [];
+        $assignee = $fields['assignee'] ?? [];
+        $issueType = $fields['issuetype'] ?? [];
+
+        $record = [
+            'key' => $issueKey,
+            'summary' => $fields['summary'] ?? '',
+            'issueType' => [
+                'name' => $issueType['name'] ?? 'Task',
+                'iconUrl' => $issueType['iconUrl'] ?? '',
+                'subtask' => !empty($issueType['subtask']),
+            ],
+            'reporter' => [
+                'name' => $reporter['displayName'] ?? 'Unknown',
+                'avatar' => $reporter['avatarUrls']['48x48'] ?? '',
+            ],
+            'assignee' => [
+                'name' => $assignee['displayName'] ?? 'Unassigned',
+                'avatar' => $assignee['avatarUrls']['48x48'] ?? '',
+            ],
+            'created' => $fields['created'] ?? null,
+            'updated' => $fields['updated'] ?? null,
+            'archivedDate' => date('c'),
+            'archivedBy' => [
+                'name' => $archivedBy['name'] ?? 'Unknown',
+                'avatar' => $archivedBy['avatar'] ?? '',
+                'email' => $archivedBy['email'] ?? '',
+            ],
+        ];
+
+        $filtered = [];
+        foreach ($items as $item) {
+            if (($item['key'] ?? '') !== $issueKey) {
+                $filtered[] = $item;
+            }
+        }
+        array_unshift($filtered, $record);
+
+        file_put_contents($this->getArchiveStorePath(), json_encode($filtered, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        return true;
     }
 
 }

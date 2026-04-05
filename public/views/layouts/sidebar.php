@@ -5,6 +5,21 @@ $parsedUrl = parse_url($currentUrl);
 $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '/';
 ?>
 
+<div class="menu-mobile">
+    <div class="dashboard-brand">
+        <div class="dashboard-brand-badge">JT</div>
+        <div>
+            <h1>Jira Task Tool</h1>
+            <p>Team productivity dashboard</p>
+        </div>
+    </div>
+    <div class="btn-menu" id="btnMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
 <aside class="dashboard-sidebar">
     <div class="dashboard-brand">
         <div class="dashboard-brand-badge">JT</div>
@@ -48,6 +63,16 @@ $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '/';
             <span class="dashboard-nav-dot"></span>
             <span>Create Task</span>
         </a>
+        <a class="dashboard-nav-item <?= $path === '/attachments' ? 'active' : '' ?>" href="/attachments">
+            <span class="dashboard-nav-dot"></span>
+            <span>Attachments</span>
+        </a>
+        <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+        <a class="dashboard-nav-item <?= $path === '/archived-work-items' ? 'active' : '' ?>" href="/archived-work-items">
+            <span class="dashboard-nav-dot"></span>
+            <span>Archived Work Items</span>
+        </a>
+        <?php endif; ?>
         <a class="dashboard-nav-item" href="/logout">
             <span class="dashboard-nav-dot"></span>
             <span>Sign out</span>
@@ -65,6 +90,8 @@ $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '/';
             <a href="/create-task" class="dashboard-sidebar-link">Open task form</a>
         <?php elseif ($path === '/board'): ?>
             <a href="/board" class="dashboard-sidebar-link">Open Tasks</a>
+        <?php elseif ($path === '/archived-work-items'): ?>
+            <a href="/archived-work-items" class="dashboard-sidebar-link">Review archive</a>
         <?php else: ?>
             <a href="/dashboard" class="dashboard-sidebar-link">Go to dashboard</a>
         <?php endif; ?>

@@ -180,6 +180,12 @@ $(function () {
     }
 
     function buildStatusChart(issues) {
+
+        if (!issues || !issues.length) {
+            console.error('Invalid issues data', issues);
+            return;
+        }
+
         var counts = groupedCounts(issues, 'status');
         var labels = Object.keys(counts);
         var values = Object.values(counts);
@@ -197,6 +203,8 @@ $(function () {
         if (statusChartInstance) {
             statusChartInstance.destroy();
         }
+
+        $('#totalCount').text(issues.length);
 
         statusChartInstance = new Chart(document.getElementById('dashboardStatusChart'), {
             type: 'doughnut',
@@ -552,7 +560,7 @@ $(function () {
                 renderDashboard();
             },
             error: function (xhr) {
-                alert('Failed to load dashboard data. ' + (xhr.responseText || '')); 
+                alert('Failed to load dashboard data. ' + (xhr.responseText || ''));
             },
             complete: function () {
                 showLoading(false);
@@ -591,4 +599,9 @@ $(function () {
     });
 
     fetchDashboard(false);
+
+
+
+
+
 });

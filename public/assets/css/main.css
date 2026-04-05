@@ -236,13 +236,19 @@ main#board{
     margin-bottom: 0;
 }
 .form-createTask .field-group .field-input input{
-    width: 100%;
-    height: 50px;
+    border: 1px solid var(--dash-border);
     background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 10px;
+    color: var(--dash-text);
+    border-radius: 12px;
+    padding: 0px 14px;
+    height: 46px;
     font-size: 14px;
+    line-height: 22px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: .2s;
+    width: 100%;
 }
 .form-createTask .field-group.attachments .field-input input{
     padding-top: 12px;
@@ -329,17 +335,17 @@ main#board{
 }
 .form-createTask .user-active{
     background: #fff;
-    border: 1px solid #ccc;
-    padding: 9px 10px 8px;
-    border-radius: 6px;
-    height: 50px;
+    border: 1px solid var(--dash-border);
+    padding: 7px 10px 6px;
+    border-radius: 12px;
+    height: 46px;
     position: relative;
 }
 .form-createTask .user-active:after{
     content: "\f078";
     position: absolute;
     font-family: "Font Awesome 6 Pro";
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     right: 15px;
     top: 50%;
@@ -443,15 +449,15 @@ main#board{
     align-items: center;
 }
 #login:after{
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, .3);
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: -1;
+    /*content: "";*/
+    /*position: absolute;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*background: rgba(0, 0, 0, .3);*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*pointer-events: none;*/
+    /*z-index: -1;*/
 }
 #login .login-main{
     width: 100%;
@@ -459,7 +465,7 @@ main#board{
     background: #fff;
     padding: 60px;
     border-radius: 12px;
-    box-shadow: 0 5px 10px rgba(255,255,255,.4);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
     position: relative;
     z-index: 99;
     transition: .2s;
@@ -468,7 +474,7 @@ main#board{
     width: 200px;
     height: 50px;
     border: 0;
-    border-radius: 50px;
+    border-radius: 12px;
     background: #336FE8;
     font-size: 16px;
     color: #fff;
@@ -515,23 +521,36 @@ main#board{
 #login input[type="text"],
 #login input[type="password"],
 #login input[type="email"]{
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    border: 1px solid var(--dash-border);
+    background: #fff;
+    color: var(--dash-text);
+    border-radius: 12px;
+    padding: 0px 14px;
+    height: 46px;
     font-size: 14px;
+    line-height: 22px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: .2s;
+    width: 100%;
+}
+#login input[type="text"]:focus,
+#login input[type="password"]:focus,
+#login input[type="email"]:focus{
+    box-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+    outline: none;
 }
 #login .group-field{
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 #login .toggle-password{
     position: absolute;
     right: 0px;
     top: 0px;
     z-index: 1;
-    width: 40px;
+    width: 50px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -551,7 +570,6 @@ main#board{
     width: 20px;
 }
 #login label{
-    margin-bottom: 6px;
     display: block;
 }
 #login .btn-form{
@@ -585,7 +603,7 @@ main#board{
     font-size: 14px;
     top: 0px;
     right: 0px;
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 12px 12px 0;
 }
 
 .swal-overlay {
@@ -638,6 +656,12 @@ main#board{
     height: 20px;
     border: 1px solid #ccc;
     margin: 0 10px 0 0;
+    position: relative;
+    top: -1px;
+}
+.remember-me label{
+    cursor: pointer;
+    display: inline-block !important;
 }
 
 .hidden{
@@ -694,7 +718,7 @@ main#board{
 .board-item{
     width: 270px;
     /*min-height: 100%;*/
-    max-height: calc(100vh - 270px);
+    max-height: calc(100vh - 280px);
     overflow: hidden;
     border-radius: 6px;
     background: #F4F5F7;
@@ -704,12 +728,12 @@ main#board{
     height: calc(100% - 60px);
 }
 .boardContent-list{
-    max-height: calc(100vh - 360px);
-    padding: 5px 5px 0px;
+    max-height: calc(100vh - 370px);
+    padding: 8px 8px 0px;
     overflow-x: auto;
 }
 .board-item .task-item{
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     background: #fff;
     border-radius: 6px;
     box-shadow: var(--ds-shadow-raised, 0 1px 1px #091e4240, 0 0 1px 1px #091e4221);
@@ -1152,6 +1176,7 @@ main#board{
     transition-property: transform;
     transition-timing-function: cubic-bezier(0.15, 1, 0.3, 1);
     overflow: hidden;
+    padding: 18px;
 }
 .taskContent-popup .close-popup{
     position: absolute;
@@ -1166,6 +1191,7 @@ main#board{
     right: 10px;
     transition: .3s;
     border-radius: 3px;
+    background: #fff;
 }
 .taskContent-popup .close-popup:after {
     content: "";
@@ -1195,28 +1221,28 @@ main#board{
     background: #fff;
     height: 100%;
     /*min-height: 70vh;*/
-    border-radius: 6px;
+    border-radius: 12px;
     box-shadow: 0 6px 10px rgba(0,0,0,.3);
     position: relative;
 }
 .taskContent-popup .taskBox{
     display: flex;
     flex-wrap: wrap;
-    padding: 60px 40px;
+    padding: 60px 25px;
     height: 100%;
 }
 .taskContent-popup .taskBox .left-taskInfo{
-    width: 70%;
-    padding-right: 40px;
+    width: 65.5%;
+    padding-right: 30px;
     height: 100%;
 }
 .taskContent-popup .taskBox .right-taskInfo{
-    width: 30%;
+    width: 34.5%;
 }
 
 .taskContent-popup .details{
-    border: 1px solid #DFE1E6;
-    border-radius: 4px;
+    border: 1px solid var(--dash-border);
+    border-radius: 12px;
 }
 .taskContent-popup .details .details-item {
     display: flex;
@@ -1245,6 +1271,11 @@ main#board{
     cursor: pointer;
     padding: 5px 8px;
     min-height: 30px;
+    margin-right: 0;
+    margin-left: auto;
+}
+.taskContent-popup .details .details-item .item-info.hidden{
+    display: none;
 }
 .taskContent-popup .details .details-item .item-info.assignee-item{
     padding-left: 0;
@@ -1323,6 +1354,7 @@ main#board{
     width: 100%;
     padding: 5px 6px;
     border-radius: 4px;
+    border: 1px solid transparent;
 }
 .taskContent-popup .details .details-item .user-option:hover,
 .taskContent-popup .details .details-item .assignee-selected:hover{
@@ -1360,7 +1392,7 @@ main#board{
     color: #44546f;
     text-transform: capitalize;
     font-weight: 500;
-    border-bottom: 1px solid #DFE1E6;
+    border-bottom: 1px solid var(--dash-border);
     padding: 15px;
     margin-bottom: 15px;
 }
@@ -1714,8 +1746,9 @@ main#board{
 }
 
 .field-group .ts-wrapper .ts-control{
-    padding: 10px;
-    border-radius: 6px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--dash-border);
 }
 .field-group .dropdown-active.ts-wrapper .ts-control{
     box-shadow: 0 3px 6px rgba(0, 0, 0, .2);
@@ -1776,7 +1809,7 @@ main#board{
     content: "\f078";
     position: absolute;
     font-family: "Font Awesome 6 Pro";
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     right: 15px;
     top: 50%;
@@ -1838,8 +1871,8 @@ main#board{
     z-index: 99;
     width: 400px;
     background: #fff;
-    padding: 16px;
-    border-radius: 3px;
+    padding: 20px 16px;
+    border-radius: 12px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, .3);
     transition: .4s;
     visibility: hidden;
@@ -2155,7 +2188,7 @@ input:disabled {
     font-size: 14px;
     top: 0px;
     right: 0px;
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 12px 12px 0;
     color: #18212f;
     font-weight: 500;
 }
@@ -2305,12 +2338,12 @@ input:disabled {
 
 .priority-dropdown {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     left: 0;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 6px;
-    width: 200px;
+    width: 100%;
     z-index: 10;
 }
 
@@ -2378,7 +2411,29 @@ input:disabled {
 
 
 
+@media (max-width: 1023px) {
 
+    .taskContent-popup .taskBox .left-taskInfo{
+        padding-right: 20px;
+    }
+    .taskContent-popup .taskBox .left-taskInfo{
+        width: 100%;
+        padding-right: 0;
+    }
+    .taskContent-popup .taskBox .right-taskInfo{
+        width: 100%;
+        padding-top: 30px;
+        background: #fff;
+    }
+    .taskContent-popup .taskBox{
+        overflow: auto;
+        padding-top: 30px;
+    }
+    .taskContent-popup .left-taskInfo .key{
+        margin-bottom: 20px;
+    }
+
+}
 
 
 
@@ -2393,5 +2448,9 @@ input:disabled {
     .swal-overlay .icon-check img {
         max-width: 60px;
     }
+    .taskContent-popup{
+        top: 85px;
+    }
+
 
 }

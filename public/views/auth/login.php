@@ -5,11 +5,11 @@
         <h2>Login</h2>
         <form method="POST" action="/login">
             <div class="group-field">
-                <label for="username">Username:</label>
+                <label for="username">Username</label>
                 <input type="text" id="name" name="name" required>
             </div>
             <div class="group-field field-pass">
-                <label for="password">Password:</label>
+                <label for="password">Password</label>
                 <div class="container-input">
                     <input id="password-field" type="password" name="password" required>
                     <span toggle="#password-field" class="fa-regular fa-eye-slash field-icon toggle-password"></span>
