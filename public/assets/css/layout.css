@@ -15,7 +15,8 @@ body {
   font-size:13px;
 }
 body.login,
-body.register{
+body.register,
+body.waiting-approval{
     background-image: url("../images/bg.jpg");
     background-size: cover;
     background-repeat: no-repeat;

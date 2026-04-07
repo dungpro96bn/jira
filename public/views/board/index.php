@@ -47,37 +47,7 @@
             }
         ?>
 
-        <section class="board-filters-bar">
-            <div class="board-filters-bar__search">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="boardSearchInput" placeholder="Search board">
-            </div>
-            <div class="board-filters-bar__assignees" id="boardQuickAssignees">
-                <?php
-                $total = count($boardAssigneeMap);
-                $i = 0;
-                ?>
 
-                <?php foreach ($boardAssigneeMap as $boardUser): ?>
-                    <button
-                        type="button"
-                        class="board-assignee-chip"
-                        data-account-id="<?= htmlspecialchars($boardUser['id']) ?>"
-                        title="<?= htmlspecialchars($boardUser['name']) ?>"
-                        style="z-index: <?= $total - $i ?>"
-                    >
-                        <?php if (!empty($boardUser['avatar'])): ?>
-                            <img src="<?= htmlspecialchars($boardUser['avatar']) ?>" alt="<?= htmlspecialchars($boardUser['name']) ?>">
-                        <?php else: ?>
-                            <span><?= htmlspecialchars(mb_strtoupper(mb_substr($boardUser['name'], 0, 1))) ?></span>
-                        <?php endif; ?>
-                    </button>
-                <?php $i++; endforeach; ?>
-            </div>
-            <div class="board-filters-bar__actions">
-                <button type="button" class="dashboard-button dashboard-button-primary" id="boardFilterToggle">Filter <i class="fa-solid fa-angle-down"></i></button>
-            </div>
-        </section>
 
         <div class="board-filter-popup" id="boardFilterPopup" hidden>
             <div class="board-filter-popup__inner panel">
@@ -142,12 +112,37 @@
         </div>
 
         <section class="panel board-dashboard-panel">
-            <div class="panel-header">
-                <div>
-                    <h3 class="panel-title">Kanban Board</h3>
-                    <p class="panel-subtitle">Drag and drop tasks between columns, then open details without leaving the page.</p>
+            <section class="board-filters-bar">
+                <div class="board-filters-bar__search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="boardSearchInput" placeholder="Search board">
                 </div>
-            </div>
+                <div class="board-filters-bar__assignees" id="boardQuickAssignees">
+                    <?php
+                    $total = count($boardAssigneeMap);
+                    $i = 0;
+                    ?>
+
+                    <?php foreach ($boardAssigneeMap as $boardUser): ?>
+                        <button
+                                type="button"
+                                class="board-assignee-chip"
+                                data-account-id="<?= htmlspecialchars($boardUser['id']) ?>"
+                                title="<?= htmlspecialchars($boardUser['name']) ?>"
+                                style="z-index: <?= $total - $i ?>"
+                        >
+                            <?php if (!empty($boardUser['avatar'])): ?>
+                                <img src="<?= htmlspecialchars($boardUser['avatar']) ?>" alt="<?= htmlspecialchars($boardUser['name']) ?>">
+                            <?php else: ?>
+                                <span><?= htmlspecialchars(mb_strtoupper(mb_substr($boardUser['name'], 0, 1))) ?></span>
+                            <?php endif; ?>
+                        </button>
+                        <?php $i++; endforeach; ?>
+                </div>
+                <div class="board-filters-bar__actions">
+                    <button type="button" class="dashboard-button" id="boardFilterToggle">Filter <i class="fa-solid fa-angle-down"></i></button>
+                </div>
+            </section>
             <div class="panel-body board-dashboard-body">
                 <div class="board-shell">
                     <div id="board-list" class="board-list"></div>

@@ -426,6 +426,8 @@ foreach ($issues as $issue) {
 <script>
     function initSortable() {
 
+        let alertTimer = null;
+
         document.querySelectorAll('.boardContent-list')
             .forEach(function(column) {
 

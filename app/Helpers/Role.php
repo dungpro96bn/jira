@@ -15,7 +15,7 @@ class Role
 
         if (!in_array($userRole, (array)$roles)) {
             http_response_code(403);
-            echo "Forbidden";
+            header("Location: /forbidden");
             exit;
         }
     }

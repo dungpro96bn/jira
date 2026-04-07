@@ -73,27 +73,22 @@ $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '/';
             <span>Archived Work Items</span>
         </a>
         <?php endif; ?>
-        <a class="dashboard-nav-item" href="/logout">
-            <span class="dashboard-nav-dot"></span>
-            <span>Sign out</span>
-        </a>
     </div>
 
     <div class="dashboard-sidebar-card">
-        <h3>Weekly health</h3>
-        <p>Completion rate is strong this week. A few overdue items still need review from the editor team.</p>
-        <?php if ($path === '/dashboard'): ?>
-            <button type="button" id="sidebarRefresh">Refresh dashboard</button>
-        <?php elseif ($path === '/users'): ?>
-            <a href="/users" class="dashboard-sidebar-link">Review users</a>
-        <?php elseif ($path === '/create-task'): ?>
-            <a href="/create-task" class="dashboard-sidebar-link">Open task form</a>
-        <?php elseif ($path === '/board'): ?>
-            <a href="/board" class="dashboard-sidebar-link">Open Tasks</a>
-        <?php elseif ($path === '/archived-work-items'): ?>
-            <a href="/archived-work-items" class="dashboard-sidebar-link">Review archive</a>
-        <?php else: ?>
-            <a href="/dashboard" class="dashboard-sidebar-link">Go to dashboard</a>
-        <?php endif; ?>
+        <div class="user-info">
+            <div class="avt-user">
+                <img src="../../assets/images/avt.png" width="60" alt="">
+            </div>
+            <div class="user-name">
+                <p class="name"><?php echo $_SESSION["user"]["username"]; ?></p>
+                <p class="role"><?php echo $_SESSION["user"]["role"]; ?></p>
+            </div>
+        </div>
+        <div class="sign-out">
+            <a class="" href="/logout">
+                <span>Sign out</span>
+            </a>
+        </div>
     </div>
 </aside>

@@ -52,6 +52,14 @@ class Web
                 }
                 break;
 
+            case '/forbidden':
+                AuthMiddleware::check();
+
+                if ($method === 'GET') {
+                    (new AuthController())->forbidden();
+                }
+                break;
+
 
             // admin permission
             //===============================

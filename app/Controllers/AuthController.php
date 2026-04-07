@@ -20,14 +20,12 @@ class AuthController
             if ($role === 'admin') {
                 header("Location: /board");
                 exit;
-            } elseif ($role === 'editor') {
+            }
+
+            if ($role === 'editor') {
                 header("Location: /create-task");
                 exit;
             }
-
-            //user thì chuyển sang trang chờ duyệt
-            header("Location: /waiting-approval");
-            exit;
         }
 
         require __DIR__ . '/../../public/views/auth/login.php';
@@ -36,6 +34,22 @@ class AuthController
     public function waiting()
     {
         require __DIR__ . '/../../public/views/auth/waiting.php';
+    }
+
+    public function forbidden()
+    {
+        if (isset($_SESSION['user'])) {
+
+            $role = $_SESSION['user']['role'] ?? 'user';
+
+            if ($role === 'admin') {
+                header("Location: /board");
+                exit;
+            }
+
+        }
+
+        require __DIR__ . '/../../public/views/auth/forbidden.php';
     }
 
     /*

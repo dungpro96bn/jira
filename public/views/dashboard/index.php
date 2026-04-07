@@ -29,6 +29,9 @@
                     <option value="7">Last 7 days</option>
                     <option value="14">Last 14 days</option>
                     <option value="30" selected>Last 30 days</option>
+                    <option value="180">Last 6 months</option>
+                    <option value="365">Last 1 year</option>
+                    <option value="730">Last 2 years</option>
                     <option value="3650">All time</option>
                 </select>
                 <button type="button" class="dashboard-button" id="dashboardRefresh">Refresh</button>
